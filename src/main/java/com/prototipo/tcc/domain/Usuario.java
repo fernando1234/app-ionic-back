@@ -8,9 +8,7 @@ import javax.persistence.*;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotEmpty;
 import java.io.Serializable;
-import java.util.HashSet;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Entity
@@ -38,8 +36,12 @@ public class Usuario implements Serializable {
     @CollectionTable(name = "PERFIS")
     private Set<Integer> perfis = new HashSet<>();
 
+    @JsonIgnore
+    @OneToMany(mappedBy="usuario")
+    private List<Analise> analises = new ArrayList<>();
+
     public Usuario() {
-        addPerfil(Perfil.CLIENTE);
+        addPerfil(Perfil.ADMIN);
     }
 
     public Usuario(Integer id, String nome, String email, String senha) {
@@ -91,20 +93,24 @@ public class Usuario implements Serializable {
         perfis.add(perfil.getCod());
     }
 
+    public List<Analise> getAnalises() {
+        return analises;
+    }
+
+    public void setAnalises(List<Analise> analises) {
+        this.analises = analises;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Usuario usuario = (Usuario) o;
-        return Objects.equals(id, usuario.id) &&
-                Objects.equals(nome, usuario.nome) &&
-                Objects.equals(email, usuario.email) &&
-                Objects.equals(senha, usuario.senha) &&
-                Objects.equals(perfis, usuario.perfis);
+        return Objects.equals(id, usuario.id);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, nome, email, senha, perfis);
+        return Objects.hash(id);
     }
 }

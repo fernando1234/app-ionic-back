@@ -1,5 +1,6 @@
 package com.prototipo.tcc.domain;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.prototipo.tcc.domain.enums.PeriodoRepeticao;
 
 import javax.persistence.Entity;
@@ -7,6 +8,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import java.io.Serializable;
 import java.time.LocalTime;
@@ -21,14 +23,15 @@ public class Configuracao implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    @NotEmpty(message="Preenchimento obrigatório")
-    @Size(max=80, message="O tamanho deve ter no máximo {max} caracteres")
+    @NotNull(message="Preenchimento obrigatório")
+//    @Size(max=80, message="O tamanho deve ter no máximo {max} caracteres")
     private Integer capacidadeLitros;
 
-    @NotEmpty(message="Preenchimento obrigatório")
+    @NotNull(message="Preenchimento obrigatório")
     private PeriodoRepeticao periodoRepeticao;
 
-    @NotEmpty(message="Preenchimento obrigatório")
+    @NotNull(message="Preenchimento obrigatório")
+    @JsonFormat(pattern = "HH:mm")
     private LocalTime horarioPrevisto;
 
     public Integer getId() {
@@ -68,14 +71,11 @@ public class Configuracao implements Serializable {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Configuracao that = (Configuracao) o;
-        return Objects.equals(id, that.id) &&
-                Objects.equals(capacidadeLitros, that.capacidadeLitros) &&
-                periodoRepeticao == that.periodoRepeticao &&
-                Objects.equals(horarioPrevisto, that.horarioPrevisto);
+        return Objects.equals(id, that.id);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, capacidadeLitros, periodoRepeticao, horarioPrevisto);
+        return Objects.hash(id);
     }
 }

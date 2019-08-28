@@ -1,4 +1,4 @@
-//package com.nelioalves.cursomc.services;
+//package com.prototipo.tcc.services;
 //
 //import java.text.ParseException;
 //import java.text.SimpleDateFormat;
@@ -7,16 +7,6 @@
 //import org.springframework.beans.factory.annotation.Autowired;
 //import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 //import org.springframework.stereotype.Service;
-//
-//import com.nelioalves.cursomc.domain.Configuracao;
-//import com.nelioalves.cursomc.domain.Analise;
-//import com.nelioalves.cursomc.domain.Usuario;
-//import com.nelioalves.cursomc.domain.enums.PeriodoRepeticao;
-//import com.nelioalves.cursomc.domain.enums.Perfil;
-//import com.nelioalves.cursomc.repositories.CategoriaRepository;
-//import com.nelioalves.cursomc.repositories.CidadeRepository;
-//import com.nelioalves.cursomc.repositories.ClienteRepository;
-//import com.nelioalves.cursomc.repositories.ProdutoRepository;
 //
 //@Service
 //public class DBService {

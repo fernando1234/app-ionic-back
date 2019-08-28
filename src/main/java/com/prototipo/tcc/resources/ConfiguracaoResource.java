@@ -35,7 +35,7 @@ public class ConfiguracaoResource {
                 "Objeto não encontrado! Id: " + id + ", Tipo: " + Configuracao.class.getName())));
     }
 
-    @PreAuthorize("hasAnyRole('ADMIN')")
+//    @PreAuthorize("hasAnyRole('ADMIN')")
     @RequestMapping(method = RequestMethod.POST)
     public ResponseEntity<Void> insert(@Valid @RequestBody Configuracao obj) {
         obj.setId(null);
@@ -45,7 +45,7 @@ public class ConfiguracaoResource {
         return ResponseEntity.created(uri).build();
     }
 
-    @PreAuthorize("hasAnyRole('ADMIN')")
+//    @PreAuthorize("hasAnyRole('ADMIN')")
     @RequestMapping(value = "/{id}", method = RequestMethod.PUT)
     public ResponseEntity<Void> update(@Valid @RequestBody Configuracao obj, @PathVariable Integer id) {
         obj.setId(id);
@@ -53,33 +53,4 @@ public class ConfiguracaoResource {
         return ResponseEntity.noContent().build();
     }
 
-    @PreAuthorize("hasAnyRole('ADMIN')")
-    @RequestMapping(value = "/{id}", method = RequestMethod.DELETE)
-    public ResponseEntity<Void> delete(@PathVariable Integer id) {
-        try {
-            repo.deleteById(id);
-        } catch (DataIntegrityViolationException e) {
-            throw new DataIntegrityException("Não é possível excluir uma categoria que possui produtos");
-        }
-
-        return ResponseEntity.noContent().build();
-    }
-
-    @RequestMapping(method = RequestMethod.GET)
-    public ResponseEntity<List<Configuracao>> findAll() {
-        return ResponseEntity.ok().body(repo.findAll());
-    }
-
-    @RequestMapping(value = "/page", method = RequestMethod.GET)
-    public ResponseEntity<Page<Configuracao>> findPage(
-            @RequestParam(value = "page", defaultValue = "0") Integer page,
-            @RequestParam(value = "linesPerPage", defaultValue = "24") Integer linesPerPage,
-            @RequestParam(value = "orderBy", defaultValue = "nome") String orderBy,
-            @RequestParam(value = "direction", defaultValue = "ASC") String direction) {
-
-        PageRequest pageRequest = PageRequest.of(page, linesPerPage, Sort.Direction.valueOf(direction), orderBy);
-        Page<Configuracao> list = repo.findAll(pageRequest);
-
-        return ResponseEntity.ok().body(list);
-    }
 }

@@ -35,7 +35,7 @@ public class Analise implements Serializable {
     private Date dataTratamento;
 
     @ManyToOne
-    @JoinColumn(name = "i_usuarios")
+    @JoinColumn(name = "usuario_id")
     private Usuario usuario;
 
     public Integer getId() {
@@ -147,23 +147,11 @@ public class Analise implements Serializable {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Analise analise = (Analise) o;
-        return Objects.equals(id, analise.id) &&
-                Objects.equals(ph, analise.ph) &&
-                Objects.equals(turbidez, analise.turbidez) &&
-                Objects.equals(condutividade, analise.condutividade) &&
-                Objects.equals(temperatura, analise.temperatura) &&
-                Objects.equals(dataLeitura, analise.dataLeitura) &&
-                Objects.equals(phP, analise.phP) &&
-                Objects.equals(phN, analise.phN) &&
-                Objects.equals(cloro, analise.cloro) &&
-                Objects.equals(decantador, analise.decantador) &&
-                Objects.equals(sanilidade, analise.sanilidade) &&
-                Objects.equals(dataTratamento, analise.dataTratamento) &&
-                Objects.equals(usuario, analise.usuario);
+        return Objects.equals(id, analise.id);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, ph, turbidez, condutividade, temperatura, dataLeitura, phP, phN, cloro, decantador, sanilidade, dataTratamento, usuario);
+        return Objects.hash(id);
     }
 }

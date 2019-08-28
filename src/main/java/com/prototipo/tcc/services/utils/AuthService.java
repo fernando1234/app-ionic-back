@@ -14,7 +14,7 @@ import com.prototipo.tcc.repositories.UsuarioRepository;
 public class AuthService {
 
 	@Autowired
-	private UsuarioRepository clienteRepository;
+	private UsuarioRepository usuarioRepository;
 	
 	@Autowired
 	private BCryptPasswordEncoder pe;
@@ -26,15 +26,15 @@ public class AuthService {
 	
 	public void sendNewPassword(String email) {
 		
-		Usuario usuario = clienteRepository.findByEmail(email);
+		Usuario usuario = usuarioRepository.findByEmail(email);
 		if (usuario == null) {
 			throw new ObjectNotFoundException("Email não encontrado");
 		}
 		
 		String newPass = newPassword();
 		usuario.setSenha(pe.encode(newPass));
-		
-		clienteRepository.save(usuario);
+
+		usuarioRepository.save(usuario);
 		emailService.sendNewPasswordEmail(usuario, newPass);
 	}
 
