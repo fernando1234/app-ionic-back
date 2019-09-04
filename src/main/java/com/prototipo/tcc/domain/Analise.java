@@ -29,10 +29,18 @@ public class Analise implements Serializable {
     private BigDecimal phN;
     private BigDecimal cloro;
     private BigDecimal decantador;
-    private BigDecimal sanilidade;
+    private BigDecimal alcalinidade;
 
     @JsonFormat(pattern = "dd/MM/yyyy HH:mm")
     private Date dataTratamento;
+
+    private BigDecimal phNovo;
+    private BigDecimal turbidezNovo;
+    private BigDecimal condutividadeNovo;
+    private BigDecimal temperaturaNovo;
+
+    @JsonFormat(pattern = "dd/MM/yyyy HH:mm")
+    private Date dataLeituraNovo;
 
     @ManyToOne
     @JoinColumn(name = "usuario_id")
@@ -118,12 +126,12 @@ public class Analise implements Serializable {
         this.decantador = decantador;
     }
 
-    public BigDecimal getSanilidade() {
-        return sanilidade;
+    public BigDecimal getAlcalinidade() {
+        return alcalinidade;
     }
 
-    public void setSanilidade(BigDecimal sanilidade) {
-        this.sanilidade = sanilidade;
+    public void setAlcalinidade(BigDecimal alcalinidade) {
+        this.alcalinidade = alcalinidade;
     }
 
     public Date getDataTratamento() {
@@ -132,6 +140,46 @@ public class Analise implements Serializable {
 
     public void setDataTratamento(Date dataTratamento) {
         this.dataTratamento = dataTratamento;
+    }
+
+    public BigDecimal getPhNovo() {
+        return phNovo;
+    }
+
+    public void setPhNovo(BigDecimal phNovo) {
+        this.phNovo = phNovo;
+    }
+
+    public BigDecimal getTurbidezNovo() {
+        return turbidezNovo;
+    }
+
+    public void setTurbidezNovo(BigDecimal turbidezNovo) {
+        this.turbidezNovo = turbidezNovo;
+    }
+
+    public BigDecimal getCondutividadeNovo() {
+        return condutividadeNovo;
+    }
+
+    public void setCondutividadeNovo(BigDecimal condutividadeNovo) {
+        this.condutividadeNovo = condutividadeNovo;
+    }
+
+    public BigDecimal getTemperaturaNovo() {
+        return temperaturaNovo;
+    }
+
+    public void setTemperaturaNovo(BigDecimal temperaturaNovo) {
+        this.temperaturaNovo = temperaturaNovo;
+    }
+
+    public Date getDataLeituraNovo() {
+        return dataLeituraNovo;
+    }
+
+    public void setDataLeituraNovo(Date dataLeituraNovo) {
+        this.dataLeituraNovo = dataLeituraNovo;
     }
 
     public Usuario getUsuario() {

@@ -16,14 +16,15 @@ import org.springframework.stereotype.Service;
 @Service
 public class AnaliseService {
 
-    @Autowired
-    private AnaliseRepository repo;
+    private final AnaliseRepository repo;
+    private final EmailService emailService;
+    private final UsuarioService usuarioService;
 
-    @Autowired
-    private EmailService emailService;
-
-    @Autowired
-    private UsuarioService usuarioService;
+    public AnaliseService(AnaliseRepository repo, EmailService emailService, UsuarioService usuarioService) {
+        this.repo = repo;
+        this.emailService = emailService;
+        this.usuarioService = usuarioService;
+    }
 
     public Analise insert(Analise obj) {
         obj.setId(null);
@@ -34,15 +35,12 @@ public class AnaliseService {
     }
 
     public Page<Analise> findPage(Integer page, Integer linesPerPage, String orderBy, String direction) {
+        UserSS user = UserService.authenticated();
+        if (user == null) {
+            throw new AuthorizationException("Acesso negado");
+        }
         PageRequest pageRequest = PageRequest.of(page, linesPerPage, Direction.valueOf(direction), orderBy);
-        return repo.findAll(pageRequest);
-
-//        UserSS user = UserService.authenticated();
-//        if (user == null) {
-//            throw new AuthorizationException("Acesso negado");
-//        }
-//        PageRequest pageRequest = PageRequest.of(page, linesPerPage, Direction.valueOf(direction), orderBy);
-//        Usuario usuario = usuarioService.find(user.getId());
-//        return repo.findByUsuario(usuario, pageRequest);
+        Usuario usuario = usuarioService.find(user.getId());
+        return repo.findByUsuario(usuario, pageRequest);
     }
 }

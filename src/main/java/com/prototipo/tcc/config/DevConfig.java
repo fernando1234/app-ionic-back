@@ -1,7 +1,9 @@
 package com.prototipo.tcc.config;
 
+import com.prototipo.tcc.services.DBService;
 import com.prototipo.tcc.services.utils.EmailService;
 import com.prototipo.tcc.services.utils.SmtpEmailService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -13,8 +15,8 @@ import java.text.ParseException;
 @Profile("dev")
 public class DevConfig {
 
-//	@Autowired
-//	private DBService dbService;
+	@Autowired
+	private DBService dbService;
 
     @Value("${spring.jpa.hibernate.ddl-auto}")
     private String strategy;
@@ -26,7 +28,7 @@ public class DevConfig {
             return false;
         }
 
-//		dbService.instantiateTestDatabase();
+		dbService.instantiateTestDatabase();
         return true;
     }
 
