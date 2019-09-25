@@ -9,7 +9,7 @@ public enum PeriodoRepeticao {
 	private int cod;
 	private String descricao;
 	
-	private PeriodoRepeticao(int cod, String descricao) {
+	PeriodoRepeticao(int cod, String descricao) {
 		this.cod = cod;
 		this.descricao = descricao;
 	}

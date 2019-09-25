@@ -7,7 +7,6 @@ import com.prototipo.tcc.security.UserSS;
 import com.prototipo.tcc.services.exceptions.AuthorizationException;
 import com.prototipo.tcc.services.exceptions.ObjectNotFoundException;
 import com.prototipo.tcc.services.utils.UserService;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 

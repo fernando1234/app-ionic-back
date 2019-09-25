@@ -202,4 +202,26 @@ public class Analise implements Serializable {
     public int hashCode() {
         return Objects.hash(id);
     }
+
+    @Override
+    public String toString() {
+        return "id=" + id +
+                ", ph=" + ph +
+                ", turbidez=" + turbidez +
+                ", condutividade=" + condutividade +
+                ", temperatura=" + temperatura +
+                ", dataLeitura=" + dataLeitura +
+                ", phP=" + phP +
+                ", phN=" + phN +
+                ", cloro=" + cloro +
+                ", decantador=" + decantador +
+                ", alcalinidade=" + alcalinidade +
+                ", dataTratamento=" + dataTratamento +
+                ", phNovo=" + phNovo +
+                ", turbidezNovo=" + turbidezNovo +
+                ", condutividadeNovo=" + condutividadeNovo +
+                ", temperaturaNovo=" + temperaturaNovo +
+                ", dataLeituraNovo=" + dataLeituraNovo +
+                ", usuario=" + usuario;
+    }
 }

@@ -1,6 +1,5 @@
-package com.prototipo.tcc.services;
+package com.prototipo.tcc.services.utils;
 
-import com.prototipo.tcc.services.utils.AbstractEmailService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.mail.SimpleMailMessage;

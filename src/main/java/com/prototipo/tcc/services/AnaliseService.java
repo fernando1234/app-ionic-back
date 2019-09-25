@@ -7,7 +7,6 @@ import com.prototipo.tcc.security.UserSS;
 import com.prototipo.tcc.services.exceptions.AuthorizationException;
 import com.prototipo.tcc.services.utils.EmailService;
 import com.prototipo.tcc.services.utils.UserService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort.Direction;
@@ -28,8 +27,19 @@ public class AnaliseService {
 
     public Analise insert(Analise obj) {
         obj.setId(null);
+        return repo.save(obj);
+    }
+
+    public Analise update(Analise obj) {
+        return update(obj, Boolean.FALSE);
+    }
+
+    public Analise update(Analise obj, Boolean sendEmail) {
         obj = repo.save(obj);
-        emailService.sendOrderConfirmationEmail(obj);
+
+        if (sendEmail) {
+            emailService.sendOrderConfirmationEmail(obj);
+        }
 
         return obj;
     }

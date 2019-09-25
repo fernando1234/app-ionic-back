@@ -1,6 +1,6 @@
 package com.prototipo.tcc.config;
 
-import com.prototipo.tcc.services.MockEmailService;
+import com.prototipo.tcc.services.utils.MockEmailService;
 import com.prototipo.tcc.services.utils.EmailService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

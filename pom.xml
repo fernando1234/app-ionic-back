@@ -41,11 +41,11 @@
             <artifactId>spring-boot-starter-data-jpa</artifactId>
         </dependency>
 
-        <dependency>
-            <groupId>com.h2database</groupId>
-            <artifactId>h2</artifactId>
-            <scope>runtime</scope>
-        </dependency>
+<!--        <dependency>-->
+<!--            <groupId>com.h2database</groupId>-->
+<!--            <artifactId>h2</artifactId>-->
+<!--            <scope>runtime</scope>-->
+<!--        </dependency>-->
 
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -73,29 +73,31 @@
             <version>0.7.0</version>
         </dependency>
 
-<!--        <dependency>-->
-<!--            <groupId>com.amazonaws</groupId>-->
-<!--            <artifactId>aws-java-sdk</artifactId>-->
-<!--            <version>LATEST</version>-->
-<!--        </dependency>-->
-
         <dependency>
             <groupId>commons-io</groupId>
             <artifactId>commons-io</artifactId>
             <version>LATEST</version>
         </dependency>
 
-<!--        <dependency>-->
-<!--            <groupId>org.imgscalr</groupId>-->
-<!--            <artifactId>imgscalr-lib</artifactId>-->
-<!--            <version>4.2</version>-->
-<!--        </dependency>-->
-
         <dependency>
             <groupId>com.pi4j</groupId>
             <artifactId>pi4j-core</artifactId>
-            <version>1.1</version>
+            <version>1.2</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>com.pi4j</groupId>
+                    <artifactId>pi4j-native</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
+
+        <!-- used for the TemperatureSensor interface -->
+        <dependency>
+            <groupId>com.pi4j</groupId>
+            <artifactId>pi4j-device</artifactId>
+            <version>1.2</version>
+        </dependency>
+
     </dependencies>
 
     <build>

@@ -38,13 +38,13 @@ public class AnaliseResource {
         return ResponseEntity.ok().body(analise);
     }
 
-    @RequestMapping(method = RequestMethod.POST)
-    public ResponseEntity<Void> insert(@Valid @RequestBody Analise obj) {
-        obj = service.insert(obj);
-
-        URI uri = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(obj.getId()).toUri();
-        return ResponseEntity.created(uri).build();
-    }
+//    @RequestMapping(method = RequestMethod.POST)
+//    public ResponseEntity<Void> insert(@Valid @RequestBody Analise obj) {
+//        obj = service.insert(obj);
+//
+//        URI uri = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(obj.getId()).toUri();
+//        return ResponseEntity.created(uri).build();
+//    }
 
     @RequestMapping(method = RequestMethod.GET)
     public ResponseEntity<List<Analise>> findPage(
@@ -53,7 +53,7 @@ public class AnaliseResource {
             @RequestParam(value = "orderBy", defaultValue = "instante") String orderBy,
             @RequestParam(value = "direction", defaultValue = "DESC") String direction) {
 
-        PageRequest pageRequest = PageRequest.of(page, linesPerPage, Sort.Direction.valueOf(direction), orderBy);
+//        PageRequest pageRequest = PageRequest.of(page, linesPerPage, Sort.Direction.valueOf(direction), orderBy);
 
 //        Page<Analise> all = repo.findAll(pageRequest);
 
