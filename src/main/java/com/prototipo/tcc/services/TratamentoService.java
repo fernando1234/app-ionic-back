@@ -2,10 +2,12 @@ package com.prototipo.tcc.services;
 
 import com.pi4j.io.gpio.*;
 import com.pi4j.io.gpio.event.GpioPinListenerDigital;
+import com.pi4j.io.i2c.I2CFactory;
 import com.prototipo.tcc.domain.Analise;
 import com.prototipo.tcc.domain.enums.PinagemGpio;
 import org.springframework.stereotype.Service;
 
+import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.Date;
 
@@ -23,7 +25,7 @@ public class TratamentoService {
         this.coletaService = coletaService;
     }
 
-    public void processa(Analise analise) throws InterruptedException {
+    public void processa(Analise analise) throws InterruptedException, IOException, I2CFactory.UnsupportedBusNumberException {
         BigDecimal temperatura = analise.getTemperatura();
 
         BigDecimal mlPhPositivo = processaPhPositivo(analise.getPh());
@@ -95,14 +97,14 @@ public class TratamentoService {
         PinagemGpio sensorFluxoGpio = PinagemGpio.SENSOR_FLUXO;
 
         GpioController gpio = GpioFactory.getInstance();
-        GpioPinDigitalOutput releSolenoide = gpio.provisionDigitalOutputPin(solenoide.getGpio(), solenoide.getDescricao(), PinState.LOW);
-        GpioPinDigitalOutput minibomba = gpio.provisionDigitalOutputPin(releMinibomba.getGpio(), releMinibomba.getDescricao(), PinState.LOW);
+        GpioPinDigitalOutput releSolenoide = gpio.provisionDigitalOutputPin(solenoide.getGpio(), solenoide.getDescricao(), PinState.HIGH);
+        GpioPinDigitalOutput minibomba = gpio.provisionDigitalOutputPin(releMinibomba.getGpio(), releMinibomba.getDescricao(), PinState.HIGH);
         GpioPinDigitalInput sensorFluxo = gpio.provisionDigitalInputPin(sensorFluxoGpio.getGpio(), sensorFluxoGpio.getDescricao(), PinPullResistance.PULL_DOWN);
         sensorFluxo.setShutdownOptions(true);
 
         //Ativa solenoide e bomba
-        releSolenoide.high();
-        minibomba.high();
+        releSolenoide.low();
+        minibomba.low();
 
         // Listener
         sensorFluxo.addListener((GpioPinListenerDigital) event -> setPulso());
@@ -121,8 +123,8 @@ public class TratamentoService {
         }
 
         //Desliga solenoide e bomba
-        releSolenoide.low();
-        minibomba.low();
+        releSolenoide.high();
+        minibomba.high();
 
         gpio.shutdown();
     }
