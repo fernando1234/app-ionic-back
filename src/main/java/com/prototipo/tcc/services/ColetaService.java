@@ -12,6 +12,7 @@ import com.pi4j.io.i2c.I2CFactory;
 import com.pi4j.io.w1.W1Master;
 import com.pi4j.temperature.TemperatureScale;
 import com.prototipo.tcc.domain.Analise;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
@@ -25,13 +26,11 @@ import java.util.OptionalDouble;
 @Service
 public class ColetaService {
 
-    private final AnaliseService analiseService;
-    private final TratamentoService tratamentoService;
+    @Autowired
+    private AnaliseService analiseService;
 
-    public ColetaService(AnaliseService analiseService, TratamentoService tratamentoService) {
-        this.analiseService = analiseService;
-        this.tratamentoService = tratamentoService;
-    }
+    @Autowired
+    private TratamentoService tratamentoService;
 
     public void nova() throws InterruptedException, IOException, I2CFactory.UnsupportedBusNumberException {
         nova(null, Boolean.TRUE);

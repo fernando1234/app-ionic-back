@@ -5,6 +5,7 @@ import com.pi4j.io.gpio.event.GpioPinListenerDigital;
 import com.pi4j.io.i2c.I2CFactory;
 import com.prototipo.tcc.domain.Analise;
 import com.prototipo.tcc.domain.enums.PinagemGpio;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
@@ -17,16 +18,19 @@ public class TratamentoService {
     private static int count = 0;
     private static int start_counter = 0;
 
-    private final AnaliseService analiseService;
-    private final ColetaService coletaService;
+    @Autowired
+    private AnaliseService analiseService;
 
-    public TratamentoService(AnaliseService analiseService, ColetaService coletaService) {
-        this.analiseService = analiseService;
-        this.coletaService = coletaService;
-    }
+    @Autowired
+    private ColetaService coletaService;
 
     public void processa(Analise analise) throws InterruptedException, IOException, I2CFactory.UnsupportedBusNumberException {
         BigDecimal temperatura = analise.getTemperatura();
+
+        //TODO Calibrar sensores
+        //TODO Pegar tabela da net e de casa (paleativa)
+        //TODO proporção (10ml -> 10000L / X -> 15000L => 15ml)
+        //TODO fazer temporizador
 
         BigDecimal mlPhPositivo = processaPhPositivo(analise.getPh());
         BigDecimal mlPhNegativo = processaPhNegativo(analise.getPh());
@@ -113,6 +117,8 @@ public class TratamentoService {
             start_counter = 1;
             Thread.sleep(1);
             start_counter = 0;
+
+            //TODO Rever formula (calibrar)
 
             // waterFlow += 1.0 / 5880.0;
             //BigDecimal.valueOf((count / 5880.0));
