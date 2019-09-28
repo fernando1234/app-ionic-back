@@ -1,18 +1,14 @@
 package com.prototipo.tcc.resources;
 
+import com.pi4j.io.i2c.I2CFactory;
 import com.prototipo.tcc.domain.Analise;
 import com.prototipo.tcc.repositories.AnaliseRepository;
-import com.prototipo.tcc.services.AnaliseService;
+import com.prototipo.tcc.services.ColetaService;
 import com.prototipo.tcc.services.exceptions.ObjectNotFoundException;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
-import javax.validation.Valid;
-import java.net.URI;
+import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
 
@@ -21,11 +17,17 @@ import java.util.Optional;
 public class AnaliseResource {
 
     private final AnaliseRepository repo;
-    private final AnaliseService service;
+    private final ColetaService coletaService;
 
-    public AnaliseResource(AnaliseRepository repo, AnaliseService service) {
+    public AnaliseResource(AnaliseRepository repo, ColetaService coletaService) {
         this.repo = repo;
-        this.service = service;
+        this.coletaService = coletaService;
+    }
+
+    @RequestMapping(value = "/iniciar", method = RequestMethod.GET)
+    public ResponseEntity iniciar() throws InterruptedException, IOException, I2CFactory.UnsupportedBusNumberException {
+        coletaService.nova();
+        return ResponseEntity.noContent().build();
     }
 
     @RequestMapping(value = "/{id}", method = RequestMethod.GET)

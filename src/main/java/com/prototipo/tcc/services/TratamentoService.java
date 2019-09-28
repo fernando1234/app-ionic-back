@@ -24,6 +24,8 @@ public class TratamentoService {
     @Autowired
     private ColetaService coletaService;
 
+    private GpioController gpio = GpioFactory.getInstance();
+
     public void processa(Analise analise) throws InterruptedException, IOException, I2CFactory.UnsupportedBusNumberException {
         BigDecimal temperatura = analise.getTemperatura();
 
@@ -44,6 +46,8 @@ public class TratamentoService {
         analise.setCloro(mlCloro);
 
         analiseService.update(analise);
+
+        gpio.shutdown();
 
         coletaService.nova(analise, Boolean.FALSE);
     }
@@ -100,7 +104,7 @@ public class TratamentoService {
         PinagemGpio releMinibomba = PinagemGpio.MINIBOMBA;
         PinagemGpio sensorFluxoGpio = PinagemGpio.SENSOR_FLUXO;
 
-        GpioController gpio = GpioFactory.getInstance();
+//        GpioController gpio = GpioFactory.getInstance();
         GpioPinDigitalOutput releSolenoide = gpio.provisionDigitalOutputPin(solenoide.getGpio(), solenoide.getDescricao(), PinState.HIGH);
         GpioPinDigitalOutput minibomba = gpio.provisionDigitalOutputPin(releMinibomba.getGpio(), releMinibomba.getDescricao(), PinState.HIGH);
         GpioPinDigitalInput sensorFluxo = gpio.provisionDigitalInputPin(sensorFluxoGpio.getGpio(), sensorFluxoGpio.getDescricao(), PinPullResistance.PULL_DOWN);
@@ -132,7 +136,10 @@ public class TratamentoService {
         releSolenoide.high();
         minibomba.high();
 
-        gpio.shutdown();
+        sensorFluxo.removeAllListeners();
+        gpio.unprovisionPin(sensorFluxo);
+        gpio.unprovisionPin(minibomba);
+        gpio.unprovisionPin(releSolenoide);
     }
 
     private static void setPulso() {

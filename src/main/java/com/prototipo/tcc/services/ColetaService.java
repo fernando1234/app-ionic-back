@@ -6,13 +6,16 @@ import com.pi4j.gpio.extension.ads.ADS1115Pin;
 import com.pi4j.gpio.extension.ads.ADS1x15GpioProvider;
 import com.pi4j.io.gpio.GpioController;
 import com.pi4j.io.gpio.GpioFactory;
+import com.pi4j.io.gpio.GpioPinAnalogInput;
 import com.pi4j.io.gpio.event.GpioPinListenerAnalog;
 import com.pi4j.io.i2c.I2CBus;
 import com.pi4j.io.i2c.I2CFactory;
 import com.pi4j.io.w1.W1Master;
 import com.pi4j.temperature.TemperatureScale;
 import com.prototipo.tcc.domain.Analise;
+import com.prototipo.tcc.repositories.UsuarioRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
@@ -32,11 +35,26 @@ public class ColetaService {
     @Autowired
     private TratamentoService tratamentoService;
 
+    @Autowired
+    private UsuarioService usuarioService;
+
+    private GpioController gpio = GpioFactory.getInstance();
+
+    //REMOVER
+    @Autowired
+    private UsuarioRepository repo;
+
+    @Async
     public void nova() throws InterruptedException, IOException, I2CFactory.UnsupportedBusNumberException {
         nova(null, Boolean.TRUE);
     }
 
     public void nova(Analise analiseResultado, Boolean tratar) throws InterruptedException, IOException, I2CFactory.UnsupportedBusNumberException {
+//        UserSS user = UserService.authenticated();
+//        if (user == null) {
+//            throw new AuthorizationException("Acesso negado");
+//        }
+
         Date dataLeitura = new Date();
 
         if (!tratar) {
@@ -57,6 +75,10 @@ public class ColetaService {
             analise.setTemperatura(temperatura);
             analise.setDataLeitura(dataLeitura);
 
+            //TODO
+            analise.setUsuario(repo.findById(1).orElse(null));
+            //analise.setUsuario(usuarioService.find(1));
+
             Analise saved = analiseService.insert(analise);
 
             tratamentoService.processa(saved);
@@ -73,6 +95,8 @@ public class ColetaService {
         analiseResultado.setDataLeituraNovo(dataLeitura);
 
         analiseService.update(analiseResultado, Boolean.TRUE);
+
+        gpio.shutdown();
     }
 
     private BigDecimal coletaTemperatura() {
@@ -91,12 +115,12 @@ public class ColetaService {
 
         List<Double> coletaList = new ArrayList<>();
 
-        final GpioController gpio = GpioFactory.getInstance();
+//        final GpioController gpio = GpioFactory.getInstance();
 
         final ADS1115GpioProvider gpioProvider = new ADS1115GpioProvider(I2CBus.BUS_1, ADS1115GpioProvider.ADS1115_ADDRESS_0x48);
 
         //Leitura do INPUT_A1
-        gpio.provisionAnalogInputPin(gpioProvider, ADS1115Pin.INPUT_A1, "MyAnalogInput-A1");
+        GpioPinAnalogInput myInput = gpio.provisionAnalogInputPin(gpioProvider, ADS1115Pin.INPUT_A1, "MyAnalogInput-A1");
 
         //TODO
         gpioProvider.setProgrammableGainAmplifier(ADS1x15GpioProvider.ProgrammableGainAmplifierValue.PGA_4_096V, ADS1115Pin.ALL);
@@ -111,16 +135,18 @@ public class ColetaService {
             coletaList.add(voltage);
         };
 
-        gpio.addListener(listener);
+        myInput.addListener(listener);
 
-        // faz a leitura por 5s
+        // faz a leitura por 10s
         try {
-            Thread.sleep(5000);
+            Thread.sleep(10000);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
 
-        gpio.shutdown();
+        gpio.removeListener(listener, myInput);
+        gpio.unprovisionPin(myInput);
+        //gpio.shutdown();
 
         System.out.println("- Finalizando a leitura da turbidez");
 
@@ -132,12 +158,12 @@ public class ColetaService {
 
         List<Double> coletaList = new ArrayList<>();
 
-        final GpioController gpio = GpioFactory.getInstance();
+//        final GpioController gpio = GpioFactory.getInstance();
 
         final ADS1115GpioProvider gpioProvider = new ADS1115GpioProvider(I2CBus.BUS_1, ADS1115GpioProvider.ADS1115_ADDRESS_0x48);
 
         //Leitura do INPUT_A2
-        gpio.provisionAnalogInputPin(gpioProvider, ADS1115Pin.INPUT_A2, "MyAnalogInput-A1");
+        GpioPinAnalogInput myInput = gpio.provisionAnalogInputPin(gpioProvider, ADS1115Pin.INPUT_A2, "MyAnalogInput-A2");
 
         //TODO
         gpioProvider.setProgrammableGainAmplifier(ADS1x15GpioProvider.ProgrammableGainAmplifierValue.PGA_4_096V, ADS1115Pin.ALL);
@@ -152,16 +178,18 @@ public class ColetaService {
             coletaList.add(voltage);
         };
 
-        gpio.addListener(listener);
+        myInput.addListener(listener);
 
-        // faz a leitura por 5s
+        // faz a leitura por 10s
         try {
-            Thread.sleep(5000);
+            Thread.sleep(10000);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
 
-        gpio.shutdown();
+        gpio.removeListener(listener, myInput);
+        gpio.unprovisionPin(myInput);
+        //gpio.shutdown();
 
         System.out.println("- Finalizando a leitura da condutividade");
 
@@ -176,12 +204,12 @@ public class ColetaService {
         final DecimalFormat df = new DecimalFormat("#.##");
         final DecimalFormat pdf = new DecimalFormat("###.#");
 
-        final GpioController gpio = GpioFactory.getInstance();
+//        final GpioController gpio = GpioFactory.getInstance();
 
         final ADS1115GpioProvider gpioProvider = new ADS1115GpioProvider(I2CBus.BUS_1, ADS1115GpioProvider.ADS1115_ADDRESS_0x48);
 
         //Leitura do INPUT_A0
-        gpio.provisionAnalogInputPin(gpioProvider, ADS1115Pin.INPUT_A0, "MyAnalogInput-A1");
+        GpioPinAnalogInput myInput = gpio.provisionAnalogInputPin(gpioProvider, ADS1115Pin.INPUT_A0, "MyAnalogInput-A0");
 
         //TODO
         gpioProvider.setProgrammableGainAmplifier(ADS1x15GpioProvider.ProgrammableGainAmplifierValue.PGA_4_096V, ADS1115Pin.ALL);
@@ -199,16 +227,18 @@ public class ColetaService {
             System.out.println("VOLTS=" + df.format(voltage) + "  | PERCENT=" + pdf.format(percent));
         };
 
-        gpio.addListener(listener);
+        myInput.addListener(listener);
 
-        // faz a leitura por 5s
+        // faz a leitura por 10s
         try {
-            Thread.sleep(5000);
+            Thread.sleep(10000);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
 
-        gpio.shutdown();
+        gpio.removeListener(listener, myInput);
+        gpio.unprovisionPin(myInput);
+        //gpio.shutdown();
 
         System.out.println("- Finalizando a leitura do pH");
 
