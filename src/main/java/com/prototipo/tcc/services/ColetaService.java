@@ -38,7 +38,7 @@ public class ColetaService {
     @Autowired
     private UsuarioService usuarioService;
 
-    private GpioController gpio = GpioFactory.getInstance();
+    private static GpioController gpio;
 
     //REMOVER
     @Autowired
@@ -46,6 +46,7 @@ public class ColetaService {
 
     @Async
     public void nova() throws InterruptedException, IOException, I2CFactory.UnsupportedBusNumberException {
+        gpio = GpioFactory.getInstance();
         nova(null, Boolean.TRUE);
     }
 
@@ -57,7 +58,7 @@ public class ColetaService {
 
         Date dataLeitura = new Date();
 
-        if (!tratar) {
+        if (!tratar && analiseResultado != null) {
             // Intervalo de 10min
             Thread.sleep(600000);
         }
@@ -79,9 +80,11 @@ public class ColetaService {
             analise.setUsuario(repo.findById(1).orElse(null));
             //analise.setUsuario(usuarioService.find(1));
 
-            Analise saved = analiseService.insert(analise);
+            analiseService.insert(analise);
+            Analise analiseAposTratamento = tratamentoService.processa(analise);
+            Analise updated = analiseService.update(analiseAposTratamento);
 
-            tratamentoService.processa(saved);
+            nova(updated, Boolean.FALSE);
         }
 
         if (analiseResultado == null) {

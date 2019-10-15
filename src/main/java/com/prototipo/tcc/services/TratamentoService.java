@@ -2,13 +2,10 @@ package com.prototipo.tcc.services;
 
 import com.pi4j.io.gpio.*;
 import com.pi4j.io.gpio.event.GpioPinListenerDigital;
-import com.pi4j.io.i2c.I2CFactory;
 import com.prototipo.tcc.domain.Analise;
 import com.prototipo.tcc.domain.enums.PinagemGpio;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.Date;
 
@@ -18,15 +15,11 @@ public class TratamentoService {
     private static int count = 0;
     private static int start_counter = 0;
 
-    @Autowired
-    private AnaliseService analiseService;
+    private static GpioController gpio;
 
-    @Autowired
-    private ColetaService coletaService;
+    public Analise processa(Analise analise) throws InterruptedException {
+        gpio = GpioFactory.getInstance();
 
-    private GpioController gpio = GpioFactory.getInstance();
-
-    public void processa(Analise analise) throws InterruptedException, IOException, I2CFactory.UnsupportedBusNumberException {
         BigDecimal temperatura = analise.getTemperatura();
 
         //TODO Calibrar sensores
@@ -45,11 +38,7 @@ public class TratamentoService {
         analise.setDecantador(mlDecantador);
         analise.setCloro(mlCloro);
 
-        analiseService.update(analise);
-
-        gpio.shutdown();
-
-        coletaService.nova(analise, Boolean.FALSE);
+        return analise;
     }
 
     private BigDecimal processaTurbidez(BigDecimal turbidez) throws InterruptedException {
