@@ -1,10 +1,11 @@
 package com.prototipo.tcc.domain.enums;
 
 public enum PeriodoRepeticao {
-	
-	UM_AO_DIA(1, "Uma vez ao dia"),
-	TRES_POR_SEMANA(2, "Três vezes por semana"),
-	UM_POR_SEMANA(3, "Uma vez por semana");
+
+    UM_AO_DIA(1, "Uma vez por dia todos os dias (9AM)"),
+    DOIS_AO_DIA(2, "Duas vezes por dia todos os dia (9AM - 9PM)"),
+    UM_CADA_DOIS_DIAS(2, "Duas vezes por dia todos os dia (9AM)"),
+    DOIS_CADA_DOIS_DIAS(3, "Duas vezes por dia a cada dois dias (9AM - 9PM)");
 	
 	private int cod;
 	private String descricao;

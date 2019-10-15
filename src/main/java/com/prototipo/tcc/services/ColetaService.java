@@ -242,7 +242,8 @@ public class ColetaService {
 
         System.out.println("- Finalizando a leitura do pH");
 
-        return getMediaLeituraAnalogica(coletaList);
+        // 14 -> 5v // x -> ?v
+        return (getMediaLeituraAnalogica(coletaList).multiply(BigDecimal.valueOf(14))).divide(BigDecimal.valueOf(5));
     }
 
     private BigDecimal getMediaLeituraAnalogica(List<Double> coletaList) {

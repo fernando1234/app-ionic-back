@@ -5,15 +5,15 @@ import com.pi4j.io.gpio.RaspiPin;
 
 public enum PinagemGpio {
 
-    // VER A IMAGEM
+    // PINAGEM RASPBERRY PI 3 B
     //https://pi4j.com/1.2/images/gpio-listener-example.png
 
-    PH_MAIS(1, RaspiPin.GPIO_02, "pH(+) - GPIO 2 - rele 8"),
-    PH_MENOS(2, RaspiPin.GPIO_01, "pH(-) - GPIO 1 - rele 7"),
-    CLORO(3, RaspiPin.GPIO_03, "Cloro - GPIO 3 - rele 6"),
-    DECANTADOR(4, RaspiPin.GPIO_04, "Decantador - GPIO 4 - rele 5"),
-    MINIBOMBA(5, RaspiPin.GPIO_05, "Minibomba - GPIO 5 - rele 3"),
-    BOMBA_PISCINA(6, null, "Bomba piscina - GPIO ? - rele 2"),
+    PH_MAIS(1, RaspiPin.GPIO_02, "pH(+) - GPIO 2 - rele 1"),
+    PH_MENOS(2, RaspiPin.GPIO_01, "pH(-) - GPIO 1 - rele 2"),
+    CLORO(3, RaspiPin.GPIO_03, "Cloro - GPIO 3 - rele 3"),
+    DECANTADOR(4, RaspiPin.GPIO_04, "Decantador - GPIO 4 - rele 4"),
+    MINIBOMBA(5, RaspiPin.GPIO_05, "Minibomba - GPIO 5 - rele 6"),
+    BOMBA_PISCINA(6, null, "Bomba piscina - GPIO ? - rele 7"),
     SENSOR_FLUXO(7, RaspiPin.GPIO_00, "Sensor de fluxo - GPIO 7"),
     SENSOR_TEMPERATURA(8, RaspiPin.GPIO_07, "Sensor de temperatura - GPIO 0");
 
