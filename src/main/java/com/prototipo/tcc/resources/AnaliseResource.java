@@ -3,7 +3,7 @@ package com.prototipo.tcc.resources;
 import com.pi4j.io.i2c.I2CFactory;
 import com.prototipo.tcc.domain.Analise;
 import com.prototipo.tcc.repositories.AnaliseRepository;
-import com.prototipo.tcc.services.ColetaService;
+import com.prototipo.tcc.services.TratamentoService;
 import com.prototipo.tcc.services.exceptions.ObjectNotFoundException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -17,16 +17,17 @@ import java.util.Optional;
 public class AnaliseResource {
 
     private final AnaliseRepository repo;
-    private final ColetaService coletaService;
+    //    private final ColetaService coletaService;
+    private final TratamentoService tratamentoService;
 
-    public AnaliseResource(AnaliseRepository repo, ColetaService coletaService) {
+    public AnaliseResource(AnaliseRepository repo, TratamentoService tratamentoService) {
         this.repo = repo;
-        this.coletaService = coletaService;
+        this.tratamentoService = tratamentoService;
     }
 
     @RequestMapping(value = "/iniciar", method = RequestMethod.GET)
     public ResponseEntity iniciar() throws InterruptedException, IOException, I2CFactory.UnsupportedBusNumberException {
-        coletaService.nova();
+        tratamentoService.processa(null);
         return ResponseEntity.noContent().build();
     }
 

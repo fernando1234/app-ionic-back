@@ -7,7 +7,6 @@ import com.prototipo.tcc.domain.enums.PinagemGpio;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
-import java.util.Date;
 
 @Service
 public class TratamentoService {
@@ -20,25 +19,27 @@ public class TratamentoService {
     public Analise processa(Analise analise) throws InterruptedException {
         gpio = GpioFactory.getInstance();
 
-        BigDecimal temperatura = analise.getTemperatura();
+        iniciaTratamento(PinagemGpio.PH_MENOS, BigDecimal.valueOf(100));
+
+        //BigDecimal temperatura = analise.getTemperatura();
 
         //TODO Calibrar sensores
         //TODO Pegar tabela da net e de casa (paleativa)
         //TODO proporção (10ml -> 10000L / X -> 15000L => 15ml)
         //TODO fazer temporizador
 
-        BigDecimal mlPhPositivo = processaPhPositivo(analise.getPh());
-        BigDecimal mlPhNegativo = processaPhNegativo(analise.getPh());
-        BigDecimal mlDecantador = processaTurbidez(analise.getTurbidez());
-        BigDecimal mlCloro = processaCondutividade(analise.getCondutividade());
+//        BigDecimal mlPhPositivo = processaPhPositivo(analise.getPh());
+//        BigDecimal mlPhNegativo = processaPhNegativo(analise.getPh());
+//        BigDecimal mlDecantador = processaTurbidez(analise.getTurbidez());
+//        BigDecimal mlCloro = processaCondutividade(analise.getCondutividade());
+//
+//        analise.setDataTratamento(new Date());
+//        analise.setPhP(mlPhPositivo);
+//        analise.setPhN(mlPhNegativo);
+//        analise.setDecantador(mlDecantador);
+//        analise.setCloro(mlCloro);
 
-        analise.setDataTratamento(new Date());
-        analise.setPhP(mlPhPositivo);
-        analise.setPhN(mlPhNegativo);
-        analise.setDecantador(mlDecantador);
-        analise.setCloro(mlCloro);
-
-        return analise;
+        return null;
     }
 
     private BigDecimal processaTurbidez(BigDecimal turbidez) throws InterruptedException {
