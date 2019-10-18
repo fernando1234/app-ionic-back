@@ -1,17 +1,13 @@
 package com.prototipo.tcc.domain;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
 import com.prototipo.tcc.domain.enums.PeriodoRepeticao;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Size;
 import java.io.Serializable;
-import java.time.LocalTime;
 import java.util.Objects;
 
 @Entity
@@ -23,16 +19,21 @@ public class Configuracao implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    @NotNull(message="Preenchimento obrigatório")
-//    @Size(max=80, message="O tamanho deve ter no máximo {max} caracteres")
+    @NotNull(message = "Preenchimento obrigatório")
     private Integer capacidadeLitros;
 
-    @NotNull(message="Preenchimento obrigatório")
+    @NotNull(message = "Preenchimento obrigatório")
     private PeriodoRepeticao periodoRepeticao;
 
-    @NotNull(message="Preenchimento obrigatório")
-    @JsonFormat(pattern = "HH:mm")
-    private LocalTime horarioPrevisto;
+//    @NotNull(message="Preenchimento obrigatório")
+//    @JsonFormat(pattern = "HH:mm")
+//    private LocalTime horarioPrevisto;
+
+    @NotNull(message = "Preenchimento obrigatório")
+    private boolean temAquecedor;
+
+    @NotNull(message = "Preenchimento obrigatório")
+    private Integer temperaturaIdeal;
 
     public Integer getId() {
         return id;
@@ -58,12 +59,20 @@ public class Configuracao implements Serializable {
         this.periodoRepeticao = periodoRepeticao;
     }
 
-    public LocalTime getHorarioPrevisto() {
-        return horarioPrevisto;
+    public boolean isTemAquecedor() {
+        return temAquecedor;
     }
 
-    public void setHorarioPrevisto(LocalTime horarioPrevisto) {
-        this.horarioPrevisto = horarioPrevisto;
+    public void setTemAquecedor(boolean temAquecedor) {
+        this.temAquecedor = temAquecedor;
+    }
+
+    public Integer getTemperaturaIdeal() {
+        return temperaturaIdeal;
+    }
+
+    public void setTemperaturaIdeal(Integer temperaturaIdeal) {
+        this.temperaturaIdeal = temperaturaIdeal;
     }
 
     @Override

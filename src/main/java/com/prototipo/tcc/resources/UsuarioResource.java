@@ -4,7 +4,6 @@ import com.prototipo.tcc.domain.Usuario;
 import com.prototipo.tcc.repositories.UsuarioRepository;
 import com.prototipo.tcc.services.UsuarioService;
 import com.prototipo.tcc.services.exceptions.DataIntegrityException;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -14,7 +13,6 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import javax.validation.Valid;
@@ -51,7 +49,7 @@ public class UsuarioResource {
     @RequestMapping(method = RequestMethod.POST)
     public ResponseEntity<Void> insert(@Valid @RequestBody Usuario obj) {
         obj.setId(null);
-        obj.setSenha(pe.encode("123"));
+        obj.setSenha(pe.encode(obj.getSenha()));
         obj = repo.save(obj);
 
         URI uri = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(obj.getId()).toUri();

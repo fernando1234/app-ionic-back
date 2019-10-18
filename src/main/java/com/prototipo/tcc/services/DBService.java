@@ -14,7 +14,6 @@ import org.springframework.stereotype.Service;
 import java.math.BigDecimal;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.time.LocalTime;
 import java.util.Arrays;
 
 @Service
@@ -38,8 +37,9 @@ public class DBService {
         Configuracao config1 = new Configuracao();
         config1.setId(null);
         config1.setCapacidadeLitros(1000);
-        config1.setHorarioPrevisto(LocalTime.of(9, 10));
         config1.setPeriodoRepeticao(PeriodoRepeticao.UM_AO_DIA);
+        config1.setTemAquecedor(Boolean.TRUE);
+        config1.setTemperaturaIdeal(25);
 
         configuracaoRepository.save(config1);
 

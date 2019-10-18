@@ -29,7 +29,7 @@ public class Usuario implements Serializable {
     @NotEmpty(message="Preenchimento obrigatório")
     private String email;
 
-    @JsonIgnore
+    //@JsonIgnore
     private String senha;
 
     @ElementCollection(fetch = FetchType.EAGER)
@@ -50,7 +50,7 @@ public class Usuario implements Serializable {
         this.nome = nome;
         this.email = email;
         this.senha = senha;
-        addPerfil(Perfil.CLIENTE);
+        addPerfil(Perfil.ADMIN);
     }
 
     public Integer getId() {

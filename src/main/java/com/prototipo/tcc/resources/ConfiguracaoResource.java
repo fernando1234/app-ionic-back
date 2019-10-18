@@ -2,12 +2,7 @@ package com.prototipo.tcc.resources;
 
 import com.prototipo.tcc.domain.Configuracao;
 import com.prototipo.tcc.repositories.ConfiguracaoRepository;
-import com.prototipo.tcc.services.exceptions.DataIntegrityException;
 import com.prototipo.tcc.services.exceptions.ObjectNotFoundException;
-import org.springframework.dao.DataIntegrityViolationException;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -15,7 +10,6 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import javax.validation.Valid;
 import java.net.URI;
-import java.util.List;
 import java.util.Optional;
 
 @RestController
@@ -35,7 +29,7 @@ public class ConfiguracaoResource {
                 "Objeto não encontrado! Id: " + id + ", Tipo: " + Configuracao.class.getName())));
     }
 
-//    @PreAuthorize("hasAnyRole('ADMIN')")
+    @PreAuthorize("hasAnyRole('ADMIN')")
     @RequestMapping(method = RequestMethod.POST)
     public ResponseEntity<Void> insert(@Valid @RequestBody Configuracao obj) {
         obj.setId(null);
@@ -45,7 +39,7 @@ public class ConfiguracaoResource {
         return ResponseEntity.created(uri).build();
     }
 
-//    @PreAuthorize("hasAnyRole('ADMIN')")
+    @PreAuthorize("hasAnyRole('ADMIN')")
     @RequestMapping(value = "/{id}", method = RequestMethod.PUT)
     public ResponseEntity<Void> update(@Valid @RequestBody Configuracao obj, @PathVariable Integer id) {
         obj.setId(id);

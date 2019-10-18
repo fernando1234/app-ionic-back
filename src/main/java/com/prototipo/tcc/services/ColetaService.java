@@ -13,7 +13,9 @@ import com.pi4j.io.i2c.I2CFactory;
 import com.pi4j.io.w1.W1Master;
 import com.pi4j.temperature.TemperatureScale;
 import com.prototipo.tcc.domain.Analise;
-import com.prototipo.tcc.repositories.UsuarioRepository;
+import com.prototipo.tcc.security.UserSS;
+import com.prototipo.tcc.services.exceptions.AuthorizationException;
+import com.prototipo.tcc.services.utils.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
@@ -40,10 +42,6 @@ public class ColetaService {
 
     private static GpioController gpio;
 
-    //REMOVER
-    @Autowired
-    private UsuarioRepository repo;
-
     @Async
     public void nova() throws InterruptedException, IOException, I2CFactory.UnsupportedBusNumberException {
         gpio = GpioFactory.getInstance();
@@ -51,10 +49,10 @@ public class ColetaService {
     }
 
     public void nova(Analise analiseResultado, Boolean tratar) throws InterruptedException, IOException, I2CFactory.UnsupportedBusNumberException {
-//        UserSS user = UserService.authenticated();
-//        if (user == null) {
-//            throw new AuthorizationException("Acesso negado");
-//        }
+        UserSS user = UserService.authenticated();
+        if (user == null) {
+            throw new AuthorizationException("Acesso negado");
+        }
 
         Date dataLeitura = new Date();
 
@@ -70,15 +68,12 @@ public class ColetaService {
 
         if (analiseResultado == null && tratar) {
             Analise analise = new Analise();
+            analise.setUsuario(usuarioService.find(user.getId()));
             analise.setPh(ph);
             analise.setCondutividade(condutividade);
             analise.setTurbidez(turbidez);
             analise.setTemperatura(temperatura);
             analise.setDataLeitura(dataLeitura);
-
-            //TODO
-            analise.setUsuario(repo.findById(1).orElse(null));
-            //analise.setUsuario(usuarioService.find(1));
 
             analiseService.insert(analise);
             Analise analiseAposTratamento = tratamentoService.processa(analise);
@@ -118,8 +113,6 @@ public class ColetaService {
 
         List<Double> coletaList = new ArrayList<>();
 
-//        final GpioController gpio = GpioFactory.getInstance();
-
         final ADS1115GpioProvider gpioProvider = new ADS1115GpioProvider(I2CBus.BUS_1, ADS1115GpioProvider.ADS1115_ADDRESS_0x48);
 
         //Leitura do INPUT_A1
@@ -149,19 +142,16 @@ public class ColetaService {
 
         gpio.removeListener(listener, myInput);
         gpio.unprovisionPin(myInput);
-        //gpio.shutdown();
 
         System.out.println("- Finalizando a leitura da turbidez");
 
-        return getMediaLeituraAnalogica(coletaList);
+        return getMediaLeituraAnalogica(coletaList, 200);
     }
 
     private BigDecimal coletaCondutividade() throws IOException, I2CFactory.UnsupportedBusNumberException {
         System.out.println("- Iniciando leitura da condutividade");
 
         List<Double> coletaList = new ArrayList<>();
-
-//        final GpioController gpio = GpioFactory.getInstance();
 
         final ADS1115GpioProvider gpioProvider = new ADS1115GpioProvider(I2CBus.BUS_1, ADS1115GpioProvider.ADS1115_ADDRESS_0x48);
 
@@ -192,11 +182,10 @@ public class ColetaService {
 
         gpio.removeListener(listener, myInput);
         gpio.unprovisionPin(myInput);
-        //gpio.shutdown();
 
         System.out.println("- Finalizando a leitura da condutividade");
 
-        return getMediaLeituraAnalogica(coletaList);
+        return getMediaLeituraAnalogica(coletaList, 100);
     }
 
     private BigDecimal coletaPh() throws IOException, I2CFactory.UnsupportedBusNumberException {
@@ -206,8 +195,6 @@ public class ColetaService {
 
         final DecimalFormat df = new DecimalFormat("#.##");
         final DecimalFormat pdf = new DecimalFormat("###.#");
-
-//        final GpioController gpio = GpioFactory.getInstance();
 
         final ADS1115GpioProvider gpioProvider = new ADS1115GpioProvider(I2CBus.BUS_1, ADS1115GpioProvider.ADS1115_ADDRESS_0x48);
 
@@ -241,16 +228,17 @@ public class ColetaService {
 
         gpio.removeListener(listener, myInput);
         gpio.unprovisionPin(myInput);
-        //gpio.shutdown();
 
         System.out.println("- Finalizando a leitura do pH");
 
         // 14 -> 5v // x -> ?v
-        return (getMediaLeituraAnalogica(coletaList).multiply(BigDecimal.valueOf(14))).divide(BigDecimal.valueOf(5));
+        return getMediaLeituraAnalogica(coletaList, 14);
     }
 
-    private BigDecimal getMediaLeituraAnalogica(List<Double> coletaList) {
+    private BigDecimal getMediaLeituraAnalogica(List<Double> coletaList, int variacao) {
         OptionalDouble media = coletaList.stream().mapToDouble(a -> a).average();
-        return media.isPresent() ? BigDecimal.valueOf(media.getAsDouble()) : BigDecimal.ZERO;
+        BigDecimal volts = media.isPresent() ? BigDecimal.valueOf(media.getAsDouble()) : BigDecimal.ZERO;
+
+        return volts.multiply(BigDecimal.valueOf(variacao)).divide(BigDecimal.valueOf(5));
     }
 }
