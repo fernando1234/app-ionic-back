@@ -4,6 +4,7 @@ import com.pi4j.io.i2c.I2CFactory;
 import com.prototipo.tcc.domain.Analise;
 import com.prototipo.tcc.repositories.AnaliseRepository;
 import com.prototipo.tcc.services.AnaliseService;
+import com.prototipo.tcc.services.AquecedorService;
 import com.prototipo.tcc.services.ColetaService;
 import com.prototipo.tcc.services.exceptions.ObjectNotFoundException;
 import org.springframework.data.domain.Page;
@@ -20,16 +21,24 @@ public class AnaliseResource {
     private final AnaliseRepository repo;
     private final ColetaService coletaService;
     private final AnaliseService analiseService;
+    private final AquecedorService aquecedorService;
 
-    public AnaliseResource(AnaliseRepository repo, ColetaService coletaService, AnaliseService analiseService) {
+    public AnaliseResource(AnaliseRepository repo, ColetaService coletaService, AnaliseService analiseService, AquecedorService aquecedorService) {
         this.repo = repo;
         this.coletaService = coletaService;
         this.analiseService = analiseService;
+        this.aquecedorService = aquecedorService;
     }
 
     @RequestMapping(value = "/iniciar", method = RequestMethod.GET)
     public ResponseEntity iniciar() throws InterruptedException, IOException, I2CFactory.UnsupportedBusNumberException {
         coletaService.nova();
+        return ResponseEntity.noContent().build();
+    }
+
+    @RequestMapping(value = "/aquecer", method = RequestMethod.GET)
+    public ResponseEntity aquecer() throws InterruptedException {
+        aquecedorService.aquecer();
         return ResponseEntity.noContent().build();
     }
 

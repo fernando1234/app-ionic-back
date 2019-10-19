@@ -8,6 +8,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.validation.constraints.NotNull;
 import java.io.Serializable;
+import java.math.BigDecimal;
 import java.util.Objects;
 
 @Entity
@@ -25,9 +26,8 @@ public class Configuracao implements Serializable {
     @NotNull(message = "Preenchimento obrigatório")
     private PeriodoRepeticao periodoRepeticao;
 
-//    @NotNull(message="Preenchimento obrigatório")
-//    @JsonFormat(pattern = "HH:mm")
-//    private LocalTime horarioPrevisto;
+    @NotNull(message = "Preenchimento obrigatório")
+    private BigDecimal fatorDecantadorClarificante;
 
     @NotNull(message = "Preenchimento obrigatório")
     private boolean temAquecedor;
@@ -57,6 +57,14 @@ public class Configuracao implements Serializable {
 
     public void setPeriodoRepeticao(PeriodoRepeticao periodoRepeticao) {
         this.periodoRepeticao = periodoRepeticao;
+    }
+
+    public BigDecimal getFatorDecantadorClarificante() {
+        return fatorDecantadorClarificante;
+    }
+
+    public void setFatorDecantadorClarificante(BigDecimal fatorDecantadorClarificante) {
+        this.fatorDecantadorClarificante = fatorDecantadorClarificante;
     }
 
     public boolean isTemAquecedor() {

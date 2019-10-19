@@ -10,14 +10,13 @@ import org.springframework.stereotype.Service;
 
 import javax.validation.ValidationException;
 import java.math.BigDecimal;
-import java.util.Date;
+import java.time.LocalDateTime;
 
 @Service
 public class TratamentoService {
 
     private static int count = 0;
     private static int start_counter = 0;
-
     private static GpioController gpio;
 
     private final ConfiguracaoRepository configuracaoRepository;
@@ -37,13 +36,12 @@ public class TratamentoService {
 
         Integer capacidadeM3 = (configuracao.getCapacidadeLitros() / 1000);
 
-        BigDecimal temperatura = analise.getTemperatura();
         BigDecimal mlPhPositivo = processaPhPositivo(analise.getPh(), capacidadeM3);
         BigDecimal mlPhNegativo = processaPhNegativo(analise.getPh(), capacidadeM3);
-        BigDecimal mlDecantador = processaTurbidez(analise.getTurbidez(), capacidadeM3);
         BigDecimal mlCloro = processaCondutividade(analise.getCondutividade(), capacidadeM3);
+        BigDecimal mlDecantador = processaTurbidez(analise.getTurbidez(), capacidadeM3, configuracao.getFatorDecantadorClarificante());
 
-        analise.setDataTratamento(new Date());
+        analise.setDataTratamento(LocalDateTime.now());
         analise.setPhP(mlPhPositivo);
         analise.setPhN(mlPhNegativo);
         analise.setDecantador(mlDecantador);
@@ -52,66 +50,78 @@ public class TratamentoService {
         return analise;
     }
 
-    private BigDecimal processaTurbidez(BigDecimal turbidez, Integer capacidadeLitros) throws InterruptedException {
-        //TODO calcular qtde de ml's
+    private BigDecimal processaTurbidez(BigDecimal turbidez, Integer capacidadeM3, BigDecimal fatorDecantadorClarificante) throws InterruptedException {
         BigDecimal mlDecantador = BigDecimal.ZERO;
+        BigDecimal capacidadeLitrosDecimal = BigDecimal.valueOf(capacidadeM3);
 
-        // entre 0 a 5
-
-        if (turbidez.compareTo(BigDecimal.ZERO) > 0 || turbidez.compareTo(BigDecimal.valueOf(5)) < 0) {
-            mlDecantador = BigDecimal.valueOf(capacidadeLitros * 4.2);
+        if (turbidez.compareTo(BigDecimal.valueOf(5)) > 0 && turbidez.compareTo(BigDecimal.valueOf(10)) < 0) {
+            mlDecantador = fatorDecantadorClarificante.multiply(capacidadeLitrosDecimal);
         }
 
-        if (mlDecantador.compareTo(BigDecimal.ZERO) >= 0) {
+        if (turbidez.compareTo(BigDecimal.valueOf(10)) > 0) {
+            mlDecantador = (fatorDecantadorClarificante.multiply(BigDecimal.valueOf(3))).multiply(capacidadeLitrosDecimal);
+        }
+
+        if (mlDecantador.compareTo(BigDecimal.ZERO) > 0) {
+            //TODO tempo menor para testes (ideal 1800000 - 30min)
+            Thread.sleep(10000);
+
             iniciaTratamento(PinagemGpio.DECANTADOR, mlDecantador);
         }
 
         return mlDecantador;
     }
 
-    private BigDecimal processaCondutividade(BigDecimal condutividade, Integer capacidadeLitros) throws InterruptedException {
+    private BigDecimal processaCondutividade(BigDecimal condutividade, Integer capacidadeM3) throws InterruptedException {
         BigDecimal mlCloro = BigDecimal.TEN;
-        // 1 a 3
 
-        if (condutividade.compareTo(BigDecimal.valueOf(1)) < 0 || condutividade.compareTo(BigDecimal.valueOf(3)) > 0) {
-            mlCloro = BigDecimal.valueOf(capacidadeLitros * 4.2);
+        if (condutividade.compareTo(BigDecimal.valueOf(1)) > 0 && condutividade.compareTo(BigDecimal.valueOf(3)) < 0) {
+            return mlCloro;
         }
 
-        if (mlCloro.compareTo(BigDecimal.ZERO) >= 0) {
+        if (condutividade.compareTo(BigDecimal.valueOf(1)) < 0) {
+            mlCloro = BigDecimal.valueOf(capacidadeM3 * 4);
+        }
+
+        if (mlCloro.compareTo(BigDecimal.ZERO) > 0) {
             iniciaTratamento(PinagemGpio.CLORO, mlCloro);
         }
 
         return mlCloro;
     }
 
-    private BigDecimal processaPhPositivo(BigDecimal ph, Integer capacidadeLitros) throws InterruptedException {
-        BigDecimal mlPhPositivo = BigDecimal.ZERO;
+    private BigDecimal processaPhPositivo(BigDecimal ph, Integer capacidadeM3) throws InterruptedException {
+        BigDecimal mlRedutor = BigDecimal.ZERO;
 
-        // ex: 7 > 7.6  = false
-        if (ph.compareTo(BigDecimal.valueOf(7.6)) > 0) {
-            mlPhPositivo = BigDecimal.valueOf(capacidadeLitros * 4.2);
+        if (ph.compareTo(BigDecimal.valueOf(7.6)) > 0 && ph.compareTo(BigDecimal.valueOf(8)) < 0) {
+            mlRedutor = BigDecimal.valueOf(capacidadeM3 * 10);
+        } else if (ph.compareTo(BigDecimal.valueOf(8)) > 0) {
+            mlRedutor = BigDecimal.valueOf(capacidadeM3 * 20);
         }
 
-        if (mlPhPositivo.compareTo(BigDecimal.ZERO) >= 0) {
-            iniciaTratamento(PinagemGpio.PH_MAIS, mlPhPositivo);
+        if (mlRedutor.compareTo(BigDecimal.ZERO) > 0) {
+            iniciaTratamento(PinagemGpio.PH_MENOS, mlRedutor);
         }
 
-        return mlPhPositivo;
+        return mlRedutor;
     }
 
-    private BigDecimal processaPhNegativo(BigDecimal ph, Integer capacidadeLitros) throws InterruptedException {
-        BigDecimal mlPhNegativo = BigDecimal.ZERO;
+    private BigDecimal processaPhNegativo(BigDecimal ph, Integer capacidadeM3) throws InterruptedException {
+        BigDecimal mlElevador = BigDecimal.ZERO;
 
-        // ex: 7 < 7.2  = true
-        if (ph.compareTo(BigDecimal.valueOf(7.2)) < 0) {
-            mlPhNegativo = BigDecimal.valueOf(capacidadeLitros * 4.2);
+        if (ph.compareTo(BigDecimal.valueOf(6.8)) > 0 && ph.compareTo(BigDecimal.valueOf(7.2)) < 0) {
+            mlElevador = BigDecimal.valueOf(capacidadeM3 * 10);
+        } else if (ph.compareTo(BigDecimal.valueOf(6.2)) > 0 && ph.compareTo(BigDecimal.valueOf(6.8)) < 0) {
+            mlElevador = BigDecimal.valueOf(capacidadeM3 * 15);
+        } else if (ph.compareTo(BigDecimal.valueOf(6.2)) < 0) {
+            mlElevador = BigDecimal.valueOf(capacidadeM3 * 20);
         }
 
-        if (mlPhNegativo.compareTo(BigDecimal.ZERO) >= 0) {
-            iniciaTratamento(PinagemGpio.PH_MENOS, mlPhNegativo);
+        if (mlElevador.compareTo(BigDecimal.ZERO) > 0) {
+            iniciaTratamento(PinagemGpio.PH_MAIS, mlElevador);
         }
 
-        return mlPhNegativo;
+        return mlElevador;
     }
 
     private void iniciaTratamento(PinagemGpio solenoide, BigDecimal ml) throws InterruptedException {

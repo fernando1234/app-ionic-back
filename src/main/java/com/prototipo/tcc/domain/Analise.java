@@ -5,7 +5,7 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import javax.persistence.*;
 import java.io.Serializable;
 import java.math.BigDecimal;
-import java.util.Date;
+import java.time.LocalDateTime;
 import java.util.Objects;
 
 @Entity
@@ -23,7 +23,7 @@ public class Analise implements Serializable {
     private BigDecimal temperatura;
 
     @JsonFormat(pattern = "dd/MM/yyyy HH:mm")
-    private Date dataLeitura;
+    private LocalDateTime dataLeitura;
 
     private BigDecimal phP;
     private BigDecimal phN;
@@ -32,7 +32,7 @@ public class Analise implements Serializable {
     private BigDecimal alcalinidade;
 
     @JsonFormat(pattern = "dd/MM/yyyy HH:mm")
-    private Date dataTratamento;
+    private LocalDateTime dataTratamento;
 
     private BigDecimal phNovo;
     private BigDecimal turbidezNovo;
@@ -40,7 +40,7 @@ public class Analise implements Serializable {
     private BigDecimal temperaturaNovo;
 
     @JsonFormat(pattern = "dd/MM/yyyy HH:mm")
-    private Date dataLeituraNovo;
+    private LocalDateTime dataLeituraNovo;
 
     @ManyToOne
     @JoinColumn(name = "usuario_id")
@@ -86,11 +86,11 @@ public class Analise implements Serializable {
         this.temperatura = temperatura;
     }
 
-    public Date getDataLeitura() {
+    public LocalDateTime getDataLeitura() {
         return dataLeitura;
     }
 
-    public void setDataLeitura(Date dataLeitura) {
+    public void setDataLeitura(LocalDateTime dataLeitura) {
         this.dataLeitura = dataLeitura;
     }
 
@@ -134,11 +134,11 @@ public class Analise implements Serializable {
         this.alcalinidade = alcalinidade;
     }
 
-    public Date getDataTratamento() {
+    public LocalDateTime getDataTratamento() {
         return dataTratamento;
     }
 
-    public void setDataTratamento(Date dataTratamento) {
+    public void setDataTratamento(LocalDateTime dataTratamento) {
         this.dataTratamento = dataTratamento;
     }
 
@@ -174,11 +174,11 @@ public class Analise implements Serializable {
         this.temperaturaNovo = temperaturaNovo;
     }
 
-    public Date getDataLeituraNovo() {
+    public LocalDateTime getDataLeituraNovo() {
         return dataLeituraNovo;
     }
 
-    public void setDataLeituraNovo(Date dataLeituraNovo) {
+    public void setDataLeituraNovo(LocalDateTime dataLeituraNovo) {
         this.dataLeituraNovo = dataLeituraNovo;
     }
 

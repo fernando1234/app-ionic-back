@@ -14,6 +14,7 @@ import org.springframework.stereotype.Service;
 import java.math.BigDecimal;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
 import java.util.Arrays;
 
 @Service
@@ -37,6 +38,7 @@ public class DBService {
         Configuracao config1 = new Configuracao();
         config1.setId(null);
         config1.setCapacidadeLitros(1000);
+        config1.setFatorDecantadorClarificante(BigDecimal.ONE);
         config1.setPeriodoRepeticao(PeriodoRepeticao.UM_AO_DIA);
         config1.setTemAquecedor(Boolean.TRUE);
         config1.setTemperaturaIdeal(25);
@@ -61,17 +63,17 @@ public class DBService {
         a1.setAlcalinidade(BigDecimal.valueOf(100));
         a1.setTurbidez(BigDecimal.valueOf(2));
         a1.setTemperatura(BigDecimal.valueOf(25));
-        a1.setDataLeitura(sdf.parse("30/08/2019 10:32"));
+        a1.setDataLeitura(LocalDateTime.now());
         a1.setPhN(BigDecimal.valueOf(20));
         a1.setPhP(BigDecimal.valueOf(0));
         a1.setCloro(BigDecimal.valueOf(30));
         a1.setDecantador(BigDecimal.valueOf(10));
-        a1.setDataTratamento(sdf.parse("30/08/2019 10:40"));
+        a1.setDataTratamento(LocalDateTime.now().plusHours(2));
         a1.setPhNovo(BigDecimal.valueOf(7));
         a1.setCondutividadeNovo(BigDecimal.valueOf(100));
         a1.setTurbidezNovo(BigDecimal.valueOf(2));
         a1.setTemperaturaNovo(BigDecimal.valueOf(25));
-        a1.setDataLeituraNovo(sdf.parse("30/08/2019 10:50"));
+        a1.setDataLeituraNovo(LocalDateTime.now().plusHours(3));
         a1.setUsuario(usuario);
 
         Analise a2 = new Analise();
@@ -81,17 +83,17 @@ public class DBService {
         a2.setAlcalinidade(BigDecimal.valueOf(100));
         a2.setTurbidez(BigDecimal.valueOf(2));
         a2.setTemperatura(BigDecimal.valueOf(25));
-        a2.setDataLeitura(sdf.parse("31/08/2019 10:32"));
+        a2.setDataLeitura(LocalDateTime.now().plusDays(1));
         a2.setPhN(BigDecimal.valueOf(20));
         a2.setPhP(BigDecimal.valueOf(0));
         a2.setCloro(BigDecimal.valueOf(30));
         a2.setDecantador(BigDecimal.valueOf(10));
-        a2.setDataTratamento(sdf.parse("31/08/2019 10:40"));
+        a2.setDataTratamento(LocalDateTime.now().plusDays(1).plusHours(1));
         a2.setPhNovo(BigDecimal.valueOf(7));
         a2.setCondutividadeNovo(BigDecimal.valueOf(100));
         a2.setTurbidezNovo(BigDecimal.valueOf(2));
         a2.setTemperaturaNovo(BigDecimal.valueOf(25));
-        a2.setDataLeituraNovo(sdf.parse("31/08/2019 10:50"));
+        a2.setDataLeituraNovo(LocalDateTime.now().plusDays(1).plusHours(2));
         a2.setUsuario(usuario);
 
         Analise a3 = new Analise();
@@ -101,42 +103,22 @@ public class DBService {
         a3.setAlcalinidade(BigDecimal.valueOf(100));
         a3.setTurbidez(BigDecimal.valueOf(2));
         a3.setTemperatura(BigDecimal.valueOf(25));
-        a3.setDataLeitura(sdf.parse("05/09/2019 10:32"));
+        a3.setDataLeitura(LocalDateTime.now().plusDays(2));
         a3.setPhN(BigDecimal.valueOf(20));
         a3.setPhP(BigDecimal.valueOf(0));
         a3.setCloro(BigDecimal.valueOf(30));
         a3.setDecantador(BigDecimal.valueOf(10));
-        a3.setDataTratamento(sdf.parse("05/09/2019 10:40"));
+        a3.setDataTratamento(LocalDateTime.now().plusDays(2).plusHours(3));
         a3.setPhNovo(BigDecimal.valueOf(7));
         a3.setCondutividadeNovo(BigDecimal.valueOf(100));
         a3.setTurbidezNovo(BigDecimal.valueOf(2));
         a3.setTemperaturaNovo(BigDecimal.valueOf(25));
-        a3.setDataLeituraNovo(sdf.parse("05/09/2019 10:50"));
+        a3.setDataLeituraNovo(LocalDateTime.now().plusDays(2).plusHours(4));
         a3.setUsuario(usuario);
 
-        Analise a4 = new Analise();
-        a4.setId(null);
-        a4.setPh(BigDecimal.valueOf(7));
-        a4.setCondutividade(BigDecimal.valueOf(100));
-        a4.setAlcalinidade(BigDecimal.valueOf(100));
-        a4.setTurbidez(BigDecimal.valueOf(2));
-        a4.setTemperatura(BigDecimal.valueOf(25));
-        a4.setDataLeitura(sdf.parse("10/09/2019 10:32"));
-        a4.setPhN(BigDecimal.valueOf(20));
-        a4.setPhP(BigDecimal.valueOf(0));
-        a4.setCloro(BigDecimal.valueOf(30));
-        a4.setDecantador(BigDecimal.valueOf(10));
-        a4.setDataTratamento(sdf.parse("10/09/2019 10:40"));
-        a4.setPhNovo(BigDecimal.valueOf(7));
-        a4.setCondutividadeNovo(BigDecimal.valueOf(100));
-        a4.setTurbidezNovo(BigDecimal.valueOf(2));
-        a4.setTemperaturaNovo(BigDecimal.valueOf(25));
-        a4.setDataLeituraNovo(sdf.parse("10/09/2019 10:50"));
-        a4.setUsuario(usuario);
+        analiseRepository.saveAll(Arrays.asList(a1, a2, a3));
 
-        analiseRepository.saveAll(Arrays.asList(a1, a2, a3, a4));
-
-        usuario.getAnalises().addAll(Arrays.asList(a1, a2, a3, a4));
+        usuario.getAnalises().addAll(Arrays.asList(a1, a2, a3));
         usuarioRepository.save(usuario);
     }
 }

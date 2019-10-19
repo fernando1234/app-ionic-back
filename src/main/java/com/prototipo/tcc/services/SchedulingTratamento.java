@@ -1,6 +1,7 @@
 package com.prototipo.tcc.services;
 
 import com.pi4j.io.i2c.I2CFactory;
+import com.prototipo.tcc.domain.Analise;
 import com.prototipo.tcc.domain.Configuracao;
 import com.prototipo.tcc.domain.enums.PeriodoRepeticao;
 import com.prototipo.tcc.repositories.AnaliseRepository;
@@ -9,6 +10,7 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
+import java.time.LocalDate;
 import java.time.LocalTime;
 
 import static com.prototipo.tcc.domain.enums.PeriodoRepeticao.*;
@@ -52,15 +54,26 @@ public class SchedulingTratamento {
 
         // Uma vez por dia a cada dois dias (9AM)
         if (UM_CADA_DOIS_DIAS.equals(periodoRepeticao) && horaAtual == 9) {
-            coletaService.nova();
+            iniciaAnaliseCadaDoisDias();
         }
 
         // Duas vezes por dia a cada dois dias (9AM - 9PM)
         if (DOIS_CADA_DOIS_DIAS.equals(periodoRepeticao) && (horaAtual == 9 || horaAtual == 21)) {
-            coletaService.nova();
+            iniciaAnaliseCadaDoisDias();
         }
 
         System.out.println("Executou o Scheduled com cron");
+    }
+
+    private void iniciaAnaliseCadaDoisDias() throws InterruptedException, IOException, I2CFactory.UnsupportedBusNumberException {
+        Analise ultimaAnalise = analiseRepository.findTopByOrderByIdDesc();
+
+        int diaAnalise = ultimaAnalise.getDataLeitura().plusDays(2).getDayOfMonth();
+        int diaAtual = LocalDate.now().getDayOfMonth();
+
+        if (diaAnalise == diaAtual) {
+            coletaService.nova();
+        }
     }
 
 }

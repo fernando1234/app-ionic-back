@@ -15,4 +15,7 @@ public interface AnaliseRepository extends JpaRepository<Analise, Integer> {
     @Transactional(readOnly = true)
     Page<Analise> findByUsuario(Usuario usuario, Pageable pageRequest);
 
+    @Transactional(readOnly = true)
+    Analise findTopByOrderByIdDesc();
+
 }

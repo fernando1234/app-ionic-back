@@ -23,8 +23,8 @@ import org.springframework.stereotype.Service;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.text.DecimalFormat;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.OptionalDouble;
 
@@ -54,7 +54,7 @@ public class ColetaService {
             throw new AuthorizationException("Acesso negado");
         }
 
-        Date dataLeitura = new Date();
+        LocalDateTime dataLeitura = LocalDateTime.now();
 
         if (!tratar && analiseResultado != null) {
             // Intervalo de 10min
@@ -89,7 +89,7 @@ public class ColetaService {
         analiseResultado.setPhNovo(ph);
         analiseResultado.setTurbidezNovo(turbidez);
         analiseResultado.setCondutividadeNovo(condutividade);
-        analiseResultado.setTemperaturaNovo(temperatura);
+//        analiseResultado.setTemperaturaNovo(temperatura);
         analiseResultado.setDataLeituraNovo(dataLeitura);
 
         analiseService.update(analiseResultado, Boolean.TRUE);
