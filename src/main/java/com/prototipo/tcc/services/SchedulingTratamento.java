@@ -55,6 +55,7 @@ public class SchedulingTratamento {
         // Uma vez por dia a cada dois dias (9AM)
         if (UM_CADA_DOIS_DIAS.equals(periodoRepeticao) && horaAtual == 9) {
             iniciaAnaliseCadaDoisDias();
+            return;
         }
 
         // Duas vezes por dia a cada dois dias (9AM - 9PM)

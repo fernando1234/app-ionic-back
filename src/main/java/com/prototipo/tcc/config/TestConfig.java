@@ -1,7 +1,9 @@
 package com.prototipo.tcc.config;
 
-import com.prototipo.tcc.services.utils.MockEmailService;
+import com.prototipo.tcc.services.DBService;
 import com.prototipo.tcc.services.utils.EmailService;
+import com.prototipo.tcc.services.utils.MockEmailService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
@@ -12,12 +14,12 @@ import java.text.ParseException;
 @Profile("test")
 public class TestConfig {
 
-//	@Autowired
-//	private DBService dbService;
+    @Autowired
+    private DBService dbService;
 
     @Bean
     public boolean instantiateDatabase() throws ParseException {
-//		dbService.instantiateTestDatabase();
+        dbService.instantiateTestDatabase();
         return true;
     }
 

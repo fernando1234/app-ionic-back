@@ -16,7 +16,7 @@ public enum PinagemGpio {
     BOMBA_PISCINA(6, RaspiPin.GPIO_06, "Bomba piscina - GPIO 6 - rele 7"),
     SENSOR_FLUXO(7, RaspiPin.GPIO_00, "Sensor de fluxo - GPIO 7"),
     SENSOR_TEMPERATURA(8, RaspiPin.GPIO_07, "Sensor de temperatura - GPIO 0"),
-    AQUECEDOR(9, null, "Aquecedor - ? - rele 8");
+    AQUECEDOR(9, RaspiPin.GPIO_12, "Aquecedor - GPIO 12 - rele 8");
 
     PinagemGpio(int id, Pin gpio, String descricao) {
         this.id = id;

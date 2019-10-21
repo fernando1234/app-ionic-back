@@ -30,8 +30,7 @@ public class TratamentoService {
         Configuracao configuracao = configuracaoRepository.findById(1).orElse(null);
 
         if (configuracao == null) {
-            throw new ValidationException("Capacidade de litros da piscina não foi informada, " +
-                    "com isso não será possível fazer o tratamento.");
+            throw new ValidationException("Você ainda não definiu as configurações da sua piscina no aplicativo.");
         }
 
         Integer capacidadeM3 = (configuracao.getCapacidadeLitros() / 1000);
@@ -73,12 +72,13 @@ public class TratamentoService {
     }
 
     private BigDecimal processaCondutividade(BigDecimal condutividade, Integer capacidadeM3) throws InterruptedException {
-        BigDecimal mlCloro = BigDecimal.TEN;
+        BigDecimal mlCloro = BigDecimal.ZERO;
 
         if (condutividade.compareTo(BigDecimal.valueOf(1)) > 0 && condutividade.compareTo(BigDecimal.valueOf(3)) < 0) {
             return mlCloro;
         }
 
+        //TODO 4g ?
         if (condutividade.compareTo(BigDecimal.valueOf(1)) < 0) {
             mlCloro = BigDecimal.valueOf(capacidadeM3 * 4);
         }

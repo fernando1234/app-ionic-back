@@ -89,7 +89,6 @@ public class ColetaService {
         analiseResultado.setPhNovo(ph);
         analiseResultado.setTurbidezNovo(turbidez);
         analiseResultado.setCondutividadeNovo(condutividade);
-//        analiseResultado.setTemperaturaNovo(temperatura);
         analiseResultado.setDataLeituraNovo(dataLeitura);
 
         analiseService.update(analiseResultado, Boolean.TRUE);

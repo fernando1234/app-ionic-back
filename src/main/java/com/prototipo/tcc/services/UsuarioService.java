@@ -7,7 +7,6 @@ import com.prototipo.tcc.security.UserSS;
 import com.prototipo.tcc.services.exceptions.AuthorizationException;
 import com.prototipo.tcc.services.exceptions.ObjectNotFoundException;
 import com.prototipo.tcc.services.utils.UserService;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
@@ -16,11 +15,9 @@ import java.util.Optional;
 public class UsuarioService {
 
     private final UsuarioRepository repo;
-    private final BCryptPasswordEncoder pe;
 
-    public UsuarioService(UsuarioRepository repo, BCryptPasswordEncoder pe) {
+    public UsuarioService(UsuarioRepository repo) {
         this.repo = repo;
-        this.pe = pe;
     }
 
     public Usuario find(Integer id) {
