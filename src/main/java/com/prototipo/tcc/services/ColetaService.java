@@ -56,35 +56,30 @@ public class ColetaService {
 
         LocalDateTime dataLeitura = LocalDateTime.now();
 
-        if (!tratar && analiseResultado != null) {
-            // Intervalo de 10min
-            Thread.sleep(600000);
-        }
-
         BigDecimal ph = coletaPh();
         BigDecimal condutividade = coletaCondutividade();
         BigDecimal turbidez = coletaTurbidez();
         BigDecimal temperatura = coletaTemperatura();
 
-        if (analiseResultado == null && tratar) {
-            Analise analise = new Analise();
-            analise.setUsuario(usuarioService.find(user.getId()));
-            analise.setPh(ph);
-            analise.setCondutividade(condutividade);
-            analise.setTurbidez(turbidez);
-            analise.setTemperatura(temperatura);
-            analise.setDataLeitura(dataLeitura);
+//        if (analiseResultado == null && tratar) {
+//            Analise analise = new Analise();
+//            analise.setUsuario(usuarioService.find(user.getId()));
+//            analise.setPh(ph);
+//            analise.setCondutividade(condutividade);
+//            analise.setTurbidez(turbidez);
+//            analise.setTemperatura(temperatura);
+//            analise.setDataLeitura(dataLeitura);
+//
+//            analiseService.insert(analise);
+//            Analise analiseAposTratamento = tratamentoService.processa(analise);
+//            Analise updated = analiseService.update(analiseAposTratamento);
+//
+//            nova(updated, Boolean.FALSE);
+//        }
 
-            analiseService.insert(analise);
-            Analise analiseAposTratamento = tratamentoService.processa(analise);
-            Analise updated = analiseService.update(analiseAposTratamento);
-
-            nova(updated, Boolean.FALSE);
-        }
-
-        if (analiseResultado == null) {
-            return;
-        }
+//        if (analiseResultado == null) {
+//            return;
+//        }
 
         analiseResultado.setPhNovo(ph);
         analiseResultado.setTurbidezNovo(turbidez);

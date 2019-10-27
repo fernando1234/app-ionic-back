@@ -38,7 +38,14 @@ public class TratamentoService {
         BigDecimal mlPhPositivo = processaPhPositivo(analise.getPh(), capacidadeM3);
         BigDecimal mlPhNegativo = processaPhNegativo(analise.getPh(), capacidadeM3);
         BigDecimal mlCloro = processaCondutividade(analise.getCondutividade(), capacidadeM3);
+
+        //TODO rever tempo
+        circularAgua(5000);
+
         BigDecimal mlDecantador = processaTurbidez(analise.getTurbidez(), capacidadeM3, configuracao.getFatorDecantadorClarificante());
+
+        //TODO rever tempo
+        circularAgua(10000);
 
         analise.setDataTratamento(LocalDateTime.now());
         analise.setPhP(mlPhPositivo);
@@ -62,9 +69,6 @@ public class TratamentoService {
         }
 
         if (mlDecantador.compareTo(BigDecimal.ZERO) > 0) {
-            //TODO tempo menor para testes (ideal 1800000 - 30min)
-            Thread.sleep(10000);
-
             iniciaTratamento(PinagemGpio.DECANTADOR, mlDecantador);
         }
 
@@ -124,6 +128,21 @@ public class TratamentoService {
         return mlElevador;
     }
 
+    private void circularAgua(int tempo) throws InterruptedException {
+        PinagemGpio releBomba = PinagemGpio.BOMBA_PISCINA;
+        GpioPinDigitalOutput relePino = gpio.provisionDigitalOutputPin(releBomba.getGpio(), releBomba.getDescricao(), PinState.HIGH);
+
+        //Ativa bomba
+        relePino.low();
+
+        Thread.sleep(tempo);
+
+        //Desliga bomba
+        relePino.high();
+
+        gpio.unprovisionPin(relePino);
+    }
+
     private void iniciaTratamento(PinagemGpio solenoide, BigDecimal ml) throws InterruptedException {
         BigDecimal leituraFluxo = BigDecimal.ZERO;
         start_counter = 0;
@@ -149,10 +168,7 @@ public class TratamentoService {
             Thread.sleep(1);
             start_counter = 0;
 
-            //TODO waterFlow += 1.0 / 5880.0;
-            //TODO BigDecimal.valueOf((count / 5880.0));
-
-            leituraFluxo = BigDecimal.valueOf((count * 60 * 2.25 / 1000));
+            leituraFluxo = BigDecimal.valueOf((count * 60 * 11.5 / 1000));
             System.out.printf("Litros por minuto:  %.2f %n", leituraFluxo);
             Thread.sleep(5);
         }

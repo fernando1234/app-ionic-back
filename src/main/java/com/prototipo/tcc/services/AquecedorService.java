@@ -63,7 +63,12 @@ public class AquecedorService {
     }
 
     private void iniciar(BigDecimal temperaturaIdeal) throws InterruptedException {
-        BigDecimal temperaturaAtual = temperaturaIdeal;
+        BigDecimal temperaturaAtual = coletaTemperatura();
+
+        if (temperaturaAtual.compareTo(temperaturaIdeal) >= 0) {
+            return;
+        }
+
         PinagemGpio aquecedor = PinagemGpio.AQUECEDOR;
         gpio = GpioFactory.getInstance();
 
