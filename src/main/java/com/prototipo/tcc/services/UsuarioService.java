@@ -21,10 +21,10 @@ public class UsuarioService {
     }
 
     public Usuario find(Integer id) {
-        UserSS user = UserService.authenticated();
-        if (user == null || !user.hasRole(Perfil.ADMIN) && !id.equals(user.getId())) {
-            throw new AuthorizationException("Acesso negado");
-        }
+//        UserSS user = UserService.authenticated();
+//        if (user == null || !user.hasRole(Perfil.ADMIN) && !id.equals(user.getId())) {
+//            throw new AuthorizationException("Acesso negado");
+//        }
 
         Optional<Usuario> obj = repo.findById(id);
         return obj.orElseThrow(() -> new ObjectNotFoundException(

@@ -78,7 +78,8 @@ public class AquecedorService {
         aquecedorRele.low();
 
         while (temperaturaAtual.compareTo(temperaturaIdeal) < 0) {
-            Thread.sleep(60000);
+            //TODO ideal 60s - 60000
+            Thread.sleep(2000);
             temperaturaAtual = coletaTemperatura();
         }
 

@@ -13,16 +13,12 @@ import com.pi4j.io.i2c.I2CFactory;
 import com.pi4j.io.w1.W1Master;
 import com.pi4j.temperature.TemperatureScale;
 import com.prototipo.tcc.domain.Analise;
-import com.prototipo.tcc.security.UserSS;
-import com.prototipo.tcc.services.exceptions.AuthorizationException;
-import com.prototipo.tcc.services.utils.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 import java.math.BigDecimal;
-import java.text.DecimalFormat;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -49,10 +45,10 @@ public class ColetaService {
     }
 
     public void nova(Analise analiseResultado, Boolean tratar) throws InterruptedException, IOException, I2CFactory.UnsupportedBusNumberException {
-        UserSS user = UserService.authenticated();
-        if (user == null) {
-            throw new AuthorizationException("Acesso negado");
-        }
+//        UserSS user = UserService.authenticated();
+//        if (user == null) {
+//            throw new AuthorizationException("Acesso negado");
+//        }
 
         LocalDateTime dataLeitura = LocalDateTime.now();
 
@@ -61,25 +57,25 @@ public class ColetaService {
         BigDecimal turbidez = coletaTurbidez();
         BigDecimal temperatura = coletaTemperatura();
 
-//        if (analiseResultado == null && tratar) {
-//            Analise analise = new Analise();
-//            analise.setUsuario(usuarioService.find(user.getId()));
-//            analise.setPh(ph);
-//            analise.setCondutividade(condutividade);
-//            analise.setTurbidez(turbidez);
-//            analise.setTemperatura(temperatura);
-//            analise.setDataLeitura(dataLeitura);
-//
-//            analiseService.insert(analise);
-//            Analise analiseAposTratamento = tratamentoService.processa(analise);
-//            Analise updated = analiseService.update(analiseAposTratamento);
-//
-//            nova(updated, Boolean.FALSE);
-//        }
+        if (analiseResultado == null && tratar) {
+            Analise analise = new Analise();
+            analise.setUsuario(usuarioService.find(1));
+            analise.setPh(ph);
+            analise.setCondutividade(condutividade);
+            analise.setTurbidez(turbidez);
+            analise.setTemperatura(temperatura);
+            analise.setDataLeitura(dataLeitura);
 
-//        if (analiseResultado == null) {
-//            return;
-//        }
+            analiseService.insert(analise);
+            Analise analiseAposTratamento = tratamentoService.processa(analise);
+            Analise updated = analiseService.update(analiseAposTratamento);
+
+            nova(updated, Boolean.FALSE);
+        }
+
+        if (analiseResultado == null) {
+            return;
+        }
 
         analiseResultado.setPhNovo(ph);
         analiseResultado.setTurbidezNovo(turbidez);
@@ -87,8 +83,6 @@ public class ColetaService {
         analiseResultado.setDataLeituraNovo(dataLeitura);
 
         analiseService.update(analiseResultado, Boolean.TRUE);
-
-        gpio.shutdown();
     }
 
     private BigDecimal coletaTemperatura() {
@@ -109,27 +103,24 @@ public class ColetaService {
 
         final ADS1115GpioProvider gpioProvider = new ADS1115GpioProvider(I2CBus.BUS_1, ADS1115GpioProvider.ADS1115_ADDRESS_0x48);
 
-        //Leitura do INPUT_A1
-        GpioPinAnalogInput myInput = gpio.provisionAnalogInputPin(gpioProvider, ADS1115Pin.INPUT_A1, "MyAnalogInput-A1");
+        //Leitura do INPUT_A3
+        GpioPinAnalogInput myInput = gpio.provisionAnalogInputPin(gpioProvider, ADS1115Pin.INPUT_A3, "MyAnalogInput-A3");
 
-        //TODO
-        gpioProvider.setProgrammableGainAmplifier(ADS1x15GpioProvider.ProgrammableGainAmplifierValue.PGA_4_096V, ADS1115Pin.ALL);
-        gpioProvider.setEventThreshold(1000, ADS1115Pin.ALL);
-        gpioProvider.setMonitorInterval(1000);
+        gpioProvider.setProgrammableGainAmplifier(ADS1x15GpioProvider.ProgrammableGainAmplifierValue.PGA_4_096V, ADS1115Pin.INPUT_A3);
+        gpioProvider.setEventThreshold(100, ADS1115Pin.INPUT_A3);
+        gpioProvider.setMonitorInterval(100);
 
         GpioPinListenerAnalog listener = event -> {
             double value = event.getValue();
             double percent = ((value * 100) / ADS1115GpioProvider.ADS1115_RANGE_MAX_VALUE);
             Double voltage = gpioProvider.getProgrammableGainAmplifier(event.getPin()).getVoltage() * (percent / 100);
-
             coletaList.add(voltage);
         };
 
         myInput.addListener(listener);
 
-        // faz a leitura por 10s
         try {
-            Thread.sleep(10000);
+            Thread.sleep(20000);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
@@ -139,7 +130,15 @@ public class ColetaService {
 
         System.out.println("- Finalizando a leitura da turbidez");
 
-        return getMediaLeituraAnalogica(coletaList, 200);
+        BigDecimal volts = getMediaLeituraAnalogica(coletaList);
+        //volts = volts.multiply(BigDecimal.valueOf(0.8));
+        BigDecimal turbidity = BigDecimal.valueOf(100).subtract(volts.multiply(BigDecimal.valueOf(100)));
+
+        if (turbidity.compareTo(BigDecimal.ZERO) <= 0) {
+            return BigDecimal.ZERO;
+        }
+
+        return turbidity.setScale(2);
     }
 
     private BigDecimal coletaCondutividade() throws IOException, I2CFactory.UnsupportedBusNumberException {
@@ -152,24 +151,21 @@ public class ColetaService {
         //Leitura do INPUT_A2
         GpioPinAnalogInput myInput = gpio.provisionAnalogInputPin(gpioProvider, ADS1115Pin.INPUT_A2, "MyAnalogInput-A2");
 
-        //TODO
-        gpioProvider.setProgrammableGainAmplifier(ADS1x15GpioProvider.ProgrammableGainAmplifierValue.PGA_4_096V, ADS1115Pin.ALL);
-        gpioProvider.setEventThreshold(1000, ADS1115Pin.ALL);
-        gpioProvider.setMonitorInterval(1000);
+        gpioProvider.setProgrammableGainAmplifier(ADS1x15GpioProvider.ProgrammableGainAmplifierValue.PGA_4_096V, ADS1115Pin.INPUT_A2);
+        gpioProvider.setEventThreshold(100, ADS1115Pin.INPUT_A2);
+        gpioProvider.setMonitorInterval(100);
 
         GpioPinListenerAnalog listener = event -> {
             double value = event.getValue();
             double percent = ((value * 100) / ADS1115GpioProvider.ADS1115_RANGE_MAX_VALUE);
             Double voltage = gpioProvider.getProgrammableGainAmplifier(event.getPin()).getVoltage() * (percent / 100);
-
             coletaList.add(voltage);
         };
 
         myInput.addListener(listener);
 
-        // faz a leitura por 10s
         try {
-            Thread.sleep(10000);
+            Thread.sleep(20000);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
@@ -179,7 +175,7 @@ public class ColetaService {
 
         System.out.println("- Finalizando a leitura da condutividade");
 
-        return getMediaLeituraAnalogica(coletaList, 100);
+        return getMediaLeituraAnalogica(coletaList);
     }
 
     private BigDecimal coletaPh() throws IOException, I2CFactory.UnsupportedBusNumberException {
@@ -187,35 +183,26 @@ public class ColetaService {
 
         List<Double> coletaList = new ArrayList<>();
 
-        final DecimalFormat df = new DecimalFormat("#.##");
-        final DecimalFormat pdf = new DecimalFormat("###.#");
-
         final ADS1115GpioProvider gpioProvider = new ADS1115GpioProvider(I2CBus.BUS_1, ADS1115GpioProvider.ADS1115_ADDRESS_0x48);
 
         //Leitura do INPUT_A0
         GpioPinAnalogInput myInput = gpio.provisionAnalogInputPin(gpioProvider, ADS1115Pin.INPUT_A0, "MyAnalogInput-A0");
 
-        //TODO
-        gpioProvider.setProgrammableGainAmplifier(ADS1x15GpioProvider.ProgrammableGainAmplifierValue.PGA_4_096V, ADS1115Pin.ALL);
-        gpioProvider.setEventThreshold(1000, ADS1115Pin.ALL);
-        gpioProvider.setMonitorInterval(1000);
-
+        gpioProvider.setProgrammableGainAmplifier(ADS1x15GpioProvider.ProgrammableGainAmplifierValue.PGA_4_096V, ADS1115Pin.INPUT_A0);
+        gpioProvider.setEventThreshold(100, ADS1115Pin.INPUT_A0);
+        gpioProvider.setMonitorInterval(100);
 
         GpioPinListenerAnalog listener = event -> {
             double value = event.getValue();
-            Double percent = ((value * 100) / ADS1115GpioProvider.ADS1115_RANGE_MAX_VALUE);
+            double percent = ((value * 100) / ADS1115GpioProvider.ADS1115_RANGE_MAX_VALUE);
             Double voltage = gpioProvider.getProgrammableGainAmplifier(event.getPin()).getVoltage() * (percent / 100);
-
             coletaList.add(voltage);
-
-            System.out.println("VOLTS=" + df.format(voltage) + "  | PERCENT=" + pdf.format(percent));
         };
 
         myInput.addListener(listener);
 
-        // faz a leitura por 10s
         try {
-            Thread.sleep(10000);
+            Thread.sleep(20000);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
@@ -226,13 +213,13 @@ public class ColetaService {
         System.out.println("- Finalizando a leitura do pH");
 
         // 14 -> 5v // x -> ?v
-        return getMediaLeituraAnalogica(coletaList, 14);
+        BigDecimal volts = getMediaLeituraAnalogica(coletaList);
+
+        return volts.multiply(BigDecimal.valueOf(14)).divide(BigDecimal.valueOf(5));
     }
 
-    private BigDecimal getMediaLeituraAnalogica(List<Double> coletaList, int variacao) {
+    private BigDecimal getMediaLeituraAnalogica(List<Double> coletaList) {
         OptionalDouble media = coletaList.stream().mapToDouble(a -> a).average();
-        BigDecimal volts = media.isPresent() ? BigDecimal.valueOf(media.getAsDouble()) : BigDecimal.ZERO;
-
-        return volts.multiply(BigDecimal.valueOf(variacao)).divide(BigDecimal.valueOf(5));
+        return media.isPresent() ? BigDecimal.valueOf(media.getAsDouble()) : BigDecimal.ZERO;
     }
 }
