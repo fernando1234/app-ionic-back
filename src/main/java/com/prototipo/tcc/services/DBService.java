@@ -12,8 +12,6 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.util.Arrays;
 
@@ -33,7 +31,7 @@ public class DBService {
         this.usuarioRepository = usuarioRepository;
     }
 
-    public void instantiateTestDatabase() throws ParseException {
+    public void instantiateTestDatabase() {
 
         Configuracao config1 = new Configuracao();
         config1.setId(null);
@@ -53,8 +51,6 @@ public class DBService {
         user1.addPerfil(Perfil.ADMIN);
 
         Usuario usuario = usuarioRepository.save(user1);
-
-        SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy HH:mm");
 
         Analise a1 = new Analise();
         a1.setId(null);
