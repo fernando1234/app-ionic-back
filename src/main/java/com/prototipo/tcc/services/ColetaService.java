@@ -89,7 +89,7 @@ public class ColetaService {
         W1Master w1Master = new W1Master();
 
         for (TemperatureSensor device : w1Master.getDevices(TemperatureSensor.class)) {
-            System.out.printf("Temperatura: %3.1f°C", device.getTemperature(TemperatureScale.CELSIUS));
+            System.out.printf("- Leitura da temperatura: %3.1f°C %n", device.getTemperature(TemperatureScale.CELSIUS));
             return BigDecimal.valueOf(device.getTemperature(TemperatureScale.CELSIUS));
         }
 
@@ -103,11 +103,11 @@ public class ColetaService {
 
         final ADS1115GpioProvider gpioProvider = new ADS1115GpioProvider(I2CBus.BUS_1, ADS1115GpioProvider.ADS1115_ADDRESS_0x48);
 
-        //Leitura do INPUT_A3
-        GpioPinAnalogInput myInput = gpio.provisionAnalogInputPin(gpioProvider, ADS1115Pin.INPUT_A3, "MyAnalogInput-A3");
+        //Leitura do INPUT_A1
+        GpioPinAnalogInput myInput = gpio.provisionAnalogInputPin(gpioProvider, ADS1115Pin.INPUT_A1, "MyAnalogInput-A1");
 
-        gpioProvider.setProgrammableGainAmplifier(ADS1x15GpioProvider.ProgrammableGainAmplifierValue.PGA_4_096V, ADS1115Pin.INPUT_A3);
-        gpioProvider.setEventThreshold(100, ADS1115Pin.INPUT_A3);
+        gpioProvider.setProgrammableGainAmplifier(ADS1x15GpioProvider.ProgrammableGainAmplifierValue.PGA_4_096V, ADS1115Pin.INPUT_A1);
+        gpioProvider.setEventThreshold(100, ADS1115Pin.INPUT_A1);
         gpioProvider.setMonitorInterval(100);
 
         GpioPinListenerAnalog listener = event -> {
@@ -138,7 +138,7 @@ public class ColetaService {
             return BigDecimal.ZERO;
         }
 
-        return turbidity.setScale(2);
+        return turbidity.setScale(2, BigDecimal.ROUND_HALF_DOWN);
     }
 
     private BigDecimal coletaCondutividade() throws IOException, I2CFactory.UnsupportedBusNumberException {

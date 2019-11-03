@@ -31,6 +31,8 @@ public class SchedulingTratamento {
     // Executa duas vezes ao dia (9AM - 9PM)
     @Scheduled(cron = "0 0 9,21 * * *")
     public void executar() throws InterruptedException, IOException, I2CFactory.UnsupportedBusNumberException {
+        System.out.println("Executou o Scheduled com cron");
+
         Configuracao configuracao = repo.findById(1).orElse(null);
 
         if (configuracao == null) {
@@ -62,8 +64,6 @@ public class SchedulingTratamento {
         if (DOIS_CADA_DOIS_DIAS.equals(periodoRepeticao) && (horaAtual == 9 || horaAtual == 21)) {
             iniciaAnaliseCadaDoisDias();
         }
-
-        System.out.println("Executou o Scheduled com cron");
     }
 
     private void iniciaAnaliseCadaDoisDias() throws InterruptedException, IOException, I2CFactory.UnsupportedBusNumberException {

@@ -33,6 +33,8 @@ public class TratamentoService {
             throw new ValidationException("Você ainda não definiu as configurações da sua piscina no aplicativo.");
         }
 
+        System.out.println("- Iniciando tratamento");
+
         Integer capacidadeM3 = (configuracao.getCapacidadeLitros() / 1000);
 
         BigDecimal mlPhPositivo = processaPhPositivo(analise.getPh(), capacidadeM3);
@@ -53,10 +55,14 @@ public class TratamentoService {
         analise.setDecantador(mlDecantador);
         analise.setCloro(mlCloro);
 
+        System.out.println("- Finalizando tratamento");
+
         return analise;
     }
 
     private BigDecimal processaTurbidez(BigDecimal turbidez, Integer capacidadeM3, BigDecimal fatorDecantadorClarificante) throws InterruptedException {
+        System.out.println("- Tratando turbidez");
+
         BigDecimal mlDecantador = BigDecimal.ZERO;
         BigDecimal capacidadeLitrosDecimal = BigDecimal.valueOf(capacidadeM3);
 
@@ -72,10 +78,14 @@ public class TratamentoService {
             iniciaTratamento(PinagemGpio.DECANTADOR, mlDecantador);
         }
 
+        System.out.println("- Tratou com decantador/clarificante (ml): " + mlDecantador);
+
         return mlDecantador;
     }
 
     private BigDecimal processaCondutividade(BigDecimal condutividade, Integer capacidadeM3) throws InterruptedException {
+        System.out.println("- Tratando condutividade");
+
         BigDecimal mlCloro = BigDecimal.ZERO;
 
         if (condutividade.compareTo(BigDecimal.valueOf(1)) > 0 && condutividade.compareTo(BigDecimal.valueOf(3)) < 0) {
@@ -91,10 +101,14 @@ public class TratamentoService {
             iniciaTratamento(PinagemGpio.CLORO, mlCloro);
         }
 
+        System.out.println("- Tratou com cloro (ml): " + mlCloro);
+
         return mlCloro;
     }
 
     private BigDecimal processaPhPositivo(BigDecimal ph, Integer capacidadeM3) throws InterruptedException {
+        System.out.println("- Tratando pH (+)");
+
         BigDecimal mlRedutor = BigDecimal.ZERO;
 
         if (ph.compareTo(BigDecimal.valueOf(7.6)) > 0 && ph.compareTo(BigDecimal.valueOf(8)) < 0) {
@@ -107,10 +121,14 @@ public class TratamentoService {
             iniciaTratamento(PinagemGpio.PH_MENOS, mlRedutor);
         }
 
+        System.out.println("- Tratou com redutor de pH (ml): " + mlRedutor);
+
         return mlRedutor;
     }
 
     private BigDecimal processaPhNegativo(BigDecimal ph, Integer capacidadeM3) throws InterruptedException {
+        System.out.println("- Tratando pH (-)");
+
         BigDecimal mlElevador = BigDecimal.ZERO;
 
         if (ph.compareTo(BigDecimal.valueOf(6.8)) > 0 && ph.compareTo(BigDecimal.valueOf(7.2)) < 0) {
@@ -125,6 +143,8 @@ public class TratamentoService {
             iniciaTratamento(PinagemGpio.PH_MAIS, mlElevador);
         }
 
+        System.out.println("- Tratou com elevador de pH (ml): " + mlElevador);
+
         return mlElevador;
     }
 
@@ -132,13 +152,13 @@ public class TratamentoService {
         PinagemGpio releBomba = PinagemGpio.BOMBA_PISCINA;
         GpioPinDigitalOutput relePino = gpio.provisionDigitalOutputPin(releBomba.getGpio(), releBomba.getDescricao(), PinState.HIGH);
 
-        //Ativa bomba
+        System.out.println("- Ligou a bomba da piscina");
         relePino.low();
 
         Thread.sleep(tempo);
 
-        //Desliga bomba
         relePino.high();
+        System.out.println("- Desligou a bomba da piscina");
 
         gpio.unprovisionPin(relePino);
     }

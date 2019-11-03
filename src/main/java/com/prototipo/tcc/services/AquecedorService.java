@@ -43,18 +43,23 @@ public class AquecedorService {
             return;
         }
 
+        System.out.println("- Iniciando aquecimento");
+
         iniciar(BigDecimal.valueOf(configuracao.getTemperaturaIdeal()));
         BigDecimal temperaturaNova = coletaTemperatura();
 
         Analise ultimaAnalise = analiseRepository.findTopByOrderByIdDesc();
         ultimaAnalise.setTemperaturaNovo(temperaturaNova);
         analiseRepository.save(ultimaAnalise);
+
+        System.out.println("- Finalizando aquecimento");
     }
 
     private void iniciar(BigDecimal temperaturaIdeal) throws InterruptedException {
         BigDecimal temperaturaAtual = coletaTemperatura();
 
         if (temperaturaAtual.compareTo(temperaturaIdeal) >= 0) {
+            System.out.println("- Temperatura dentro dos conformes");
             return;
         }
 
@@ -65,6 +70,7 @@ public class AquecedorService {
 
         //Ativa aquecedor
         aquecedorRele.low();
+        System.out.println("- Ligou aquecedor");
 
         while (temperaturaAtual.compareTo(temperaturaIdeal) < 0) {
             //TODO ideal 60s - 60000
@@ -74,6 +80,7 @@ public class AquecedorService {
 
         //Desliga aquecedor
         aquecedorRele.high();
+        System.out.println("- Desligou aquecedor");
 
         gpio.unprovisionPin(aquecedorRele);
     }
@@ -82,7 +89,7 @@ public class AquecedorService {
         W1Master w1Master = new W1Master();
 
         for (TemperatureSensor device : w1Master.getDevices(TemperatureSensor.class)) {
-            System.out.printf("Temperatura: %3.1f°C", device.getTemperature(TemperatureScale.CELSIUS));
+            System.out.printf("- Leitura da temperatura: %3.1f°C %n", device.getTemperature(TemperatureScale.CELSIUS));
             return BigDecimal.valueOf(device.getTemperature(TemperatureScale.CELSIUS));
         }
 

@@ -215,13 +215,12 @@ public class Analise implements Serializable {
                 ", phN=" + phN +
                 ", cloro=" + cloro +
                 ", decantador=" + decantador +
-                ", alcalinidade=" + alcalinidade +
                 ", dataTratamento=" + dataTratamento +
                 ", phNovo=" + phNovo +
                 ", turbidezNovo=" + turbidezNovo +
                 ", condutividadeNovo=" + condutividadeNovo +
                 ", temperaturaNovo=" + temperaturaNovo +
                 ", dataLeituraNovo=" + dataLeituraNovo +
-                ", usuario=" + usuario;
+                ", usuario=" + usuario.getNome();
     }
 }
